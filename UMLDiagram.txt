@@ -1,0 +1,42 @@
+
+
+[Model] ++-> [<<interface>>;Entity|+passThrough();+collected();+move();+interact()]
+[Model] ++-> [Tile]
+[Model] <- [View]
+[Model] <- [Controller]
+[View] ^ [ConcreteView]
+
+[Entity] ^ [<<interface>>;Character|+passThrough();+move();+interact()]
+
+[Character] ^ [Draw]
+[Character] ^ [Dragon]
+[Character] ^ [Dwarf]
+[Character] ^ [Elf]
+[Character] ^ [Goblin]
+[Character] ^ [Halfling]
+[Character] ^ [Human]
+[Character] ^ [Merchant]
+[Character] ^ [Orc]
+[Character] ^ [Shade]
+[Character] ^ [Troll]
+[Character] ^ [Vampire]
+
+[Character] ^ [Decorator]
+
+[Decorator] ^ [Boost Atk]
+[Decorator] ^ [Boost Def]
+[Decorator] ^ [Wound Atk]
+[Decorator] ^ [Wound Def]
+
+[Entity] ^ [<<interface>>;Item|+passThrough();+collected();+interact()]
+
+[Item] ^ [Potion]
+[Item] ^ [Gold]
+[Item] ^ [Stairs]
+
+[Tile] ^ [Empty]
+[Tile] ^ [Passageway]
+[Tile] ^ [Door]
+[Tile] ^ [HWall]
+[Tile] ^ [VWall]
+[Tile] ^ [Floor]
