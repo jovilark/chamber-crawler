@@ -1,6 +1,6 @@
 
 
-[Model] ++-> [<<interface>>;Entity|+passThrough();+collected();+move();+interact()]
+[Model] ++-> [<<interface>>;Entity|+passThrough();+collected();+move();+interact();_+~Entity()_]
 [Model] ++-> [Tile]
 [Model] <- [View]
 [Model] <- [Controller]
