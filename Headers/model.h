@@ -10,8 +10,9 @@
 using std::vector;
 using std::unique_ptr;
 using State = vector<pair<Tile *, Entity *>>;
+using std::make_pair;
 
-static const Utility::Loc NEEDS_RANDOM = Utility::Loc(-1, -1);
+static const Utility::Loc NEEDS_RANDOM = make_pair(-1, -1);
 
 class Model
 {
@@ -31,8 +32,10 @@ public:
     void quit();
     State &state() { return m_state; }
     void render();
+    int indiceFromLoc(Utility::Loc l);
 private:
     Entity *m_player;
+    Utility::Loc m_playerLoc;
     bool m_move;
     State m_state;
     unique_ptr<View> m_view;

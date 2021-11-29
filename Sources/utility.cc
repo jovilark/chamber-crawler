@@ -9,6 +9,7 @@ Direction Utility::strToDirection(string s)
     else if (s == "ne") return Direction::NE;
     else if (s == "ea") return Direction::E;
     else if (s == "se") return Direction::SE;
+    else if (s == "so") return Direction::S;
     else if (s == "sw") return Direction::SW;
     else if (s == "we") return Direction::W;
     else return Direction::None;
@@ -42,4 +43,42 @@ Terrain Utility::charToTerrain(char c)
         default:
             return Terrain::None;
     }
+}
+
+Loc Utility::addDirectionToLoc(Direction d, Loc l)
+{
+    switch (d)
+    {
+        case Direction::NW:
+            l.first -= 1;
+            l.second -= 1;
+            break;
+        case Direction::N:
+            l.second -= 1;
+            break;
+        case Direction::NE:
+            l.first += 1;
+            l.second -= 1;
+            break;
+        case Direction::E:
+            l.first += 1;
+            break;
+        case Direction::SE:
+            l.first += 1;
+            l.second += 1;
+            break;
+        case Direction::S:
+            l.second += 1;
+            break;
+        case Direction::SW:
+            l.first -= 1;
+            l.second += 1;
+            break;
+        case Direction::W:
+            l.first -= 1;
+            break;
+        default:
+            break;
+    }
+    return l;
 }

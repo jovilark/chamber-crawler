@@ -13,6 +13,8 @@ using std::unique_ptr;
 class Controller
 {
 public:
+    Controller();
+    ~Controller() = default;
     void parseLayout(string file);
     void parseNewGame(char c);
     void parseTurn(string cmd);

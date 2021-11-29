@@ -9,10 +9,10 @@
 #include "../Headers/shade.h"
 
 using std::make_unique;
-using std::make_pair;
 
 Model::Model() :
 m_player{nullptr},
+m_playerLoc{make_pair(-1, -1)},
 m_move{true},
 m_view{make_unique<TextView>()},
 m_entities{},
@@ -39,15 +39,15 @@ Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l)
         // update 'l' with new random location.
     }
 
-    int indice = l.first + l.second * BOARD_WIDTH;
-    m_state[indice].second = character;
+    m_state[indiceFromLoc(l)].second = character;
     return character;
 }
 
 Entity *Model::generatePlayer(Utility::Race race)
 {
     // Temporarily assign a specified location until random works.
-    m_player = generateCharacter(race, Utility::Loc(15, 15));
+    m_playerLoc = make_pair(15, 15);
+    m_player = generateCharacter(race, m_playerLoc);
 
     return m_player;
 }
@@ -71,10 +71,8 @@ Tile *Model::generateTile(Utility::Terrain t)
         case Utility::Terrain::VWall:
             m_tiles.push_back(make_unique<VWall>());
             break;
-        case Utility::Terrain::None:
-            m_tiles.push_back(make_unique<None>());
-            break;
         default:
+            m_tiles.push_back(make_unique<None>());
             break;
     }
     Tile *tile = m_tiles.back().get();
@@ -89,8 +87,20 @@ void Model::generateLayout(vector<Utility::Terrain> layout)
 
 bool Model::playerMove(Utility::Direction d)
 {
-    // Move and update state.
-    return false;
+    Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
+    auto &target = m_state[indiceFromLoc(l)];
+    auto &origin = m_state[indiceFromLoc(m_playerLoc)];
+    
+    // Return if tile is occupied without moving.
+    if (target.second && !target.second->permeable()) return false;
+    else if (!target.first->permeable()) return false;
+
+    // Move was successful. Update state.
+    target.second = m_player;
+    origin.second = nullptr;
+    m_playerLoc = l;
+
+    return true;
 }
 
 bool Model::playerUse(Utility::Direction d)
@@ -114,4 +124,9 @@ void Model::quit()
 void Model::render()
 {
     m_view->render(m_state);
+}
+
+int Model::indiceFromLoc(Utility::Loc l)
+{
+    return l.first + l.second * BOARD_WIDTH;
 }

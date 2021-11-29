@@ -8,6 +8,7 @@ class DefEffect : public Decorator
 {
 public:
     DefEffect(int val, Character *c);
+    ~DefEffect() = default;
     int def() override;
 private:
     int m_value;

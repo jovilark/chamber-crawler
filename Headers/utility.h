@@ -50,6 +50,7 @@ namespace Utility
     Direction strToDirection(string s);
     Race charToRace(char c);
     Terrain charToTerrain(char c);
+    Loc addDirectionToLoc(Direction d, Loc l);
 };
 
 #endif // _UTILITY_H_

@@ -6,6 +6,7 @@ using std::string;
 using std::cin;
 using std::cout;
 using std::endl;
+using std::getline;
 
 int main(int argc, char *argv[])
 {
@@ -17,12 +18,9 @@ int main(int argc, char *argv[])
     cin >> c;
     controller.parseNewGame(c);
     
-    // TODO: Enable this once moving, attacking, using works.
-    /*
     string cmd;
-    while (cin >> cmd)
+    while (getline(cin, cmd))
     {
         controller.parseTurn(cmd);
     }
-    */
 }

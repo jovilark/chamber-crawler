@@ -1,10 +1,8 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -MMD
+CXXFLAGS=-std=c++14 -MMD -g
 
 INCLUDEDIR=Headers
 SOURCEDIR=Sources
-OBJECTDIR=Objects
-BINDIR=Bin
 INCLUDES=$(wildcard ${INCLUDEDIR}/*.h)
 SOURCES=$(wildcard ${SOURCEDIR}/*.cc)
 OBJECTS=${SOURCES:.cc=.o}

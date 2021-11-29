@@ -8,6 +8,7 @@ class AtkEffect : public Decorator
 {
 public:
     AtkEffect(int val, Character *c);
+    ~AtkEffect() = default;
     int atk() override;
 private:
     int m_value;

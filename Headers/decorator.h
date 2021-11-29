@@ -7,6 +7,7 @@ class Decorator : public Character
 {
 public:
     Decorator(Character *c);
+    ~Decorator() = default;
 protected:
     Character *m_c;
 };

@@ -7,6 +7,7 @@ class Shade : public Character
 {
 public:
     Shade();
+    ~Shade() = default;
     char draw();
 private:
     static const int DEFAULT_HP = 125;
