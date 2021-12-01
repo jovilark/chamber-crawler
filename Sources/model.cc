@@ -8,8 +8,10 @@
 #include "../Headers/shade.h"
 #include "../Headers/textview.h"
 #include "../Headers/vwall.h"
+#include <unordered_map>
 
 using std::make_unique;
+using std::unordered_map;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
@@ -44,6 +46,11 @@ Entity *Model::generatePlayer(Utility::Race race) {
   m_player = generateCharacter(race, m_playerLoc);
 
   return m_player;
+}
+
+void Model::generateEnemies()
+{
+  generateCharacter(Utility::Race::Dwarf, make_pair(18, 18));
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {
@@ -89,11 +96,36 @@ bool Model::playerMove(Utility::Direction d) {
     return false;
 
   // Move was successful. Update state.
-  target.second = m_player;
-  origin.second = nullptr;
+  swapSpaces(origin, target);
   m_playerLoc = l;
 
   return true;
+}
+
+void Model::enemyMove() {
+  unordered_map<Entity *, bool> moved;
+
+  for (int i = 0; i < state().size(); ++i) {
+
+    auto &origin = state()[i];
+    if (!origin.second || moved[origin.second])
+      continue;
+
+    Utility::Direction d = origin.second->move();
+
+    int x = i % BOARD_WIDTH;
+    int y = i / BOARD_WIDTH;
+    Utility::Loc l = make_pair(x, y);
+    l = addDirectionToLoc(d, l);
+
+    auto &target = state()[indiceFromLoc(l)];
+
+    if (target.second)
+      continue;
+
+    moved[origin.second] = true;
+    swapSpaces(origin, target);
+  }
 }
 
 bool Model::playerUse(Utility::Direction d) {
@@ -114,4 +146,10 @@ void Model::render() { m_view->render(m_state); }
 
 int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
+}
+
+void Model::swapSpaces(pair<Tile *, Entity *> p1, pair<Tile *, Entity *> p2) {
+  Entity *tmp = p1.second;
+  p1.second = p2.second;
+  p2.second = tmp;
 }

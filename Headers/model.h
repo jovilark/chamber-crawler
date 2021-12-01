@@ -21,6 +21,7 @@ public:
 
   Entity *generateCharacter(Utility::Race race, Utility::Loc l = NEEDS_RANDOM);
   Entity *generatePlayer(Utility::Race race);
+  void generateEnemies();
   Tile *generateTile(Utility::Terrain t);
   void generateLayout(vector<Utility::Terrain> layout);
   bool playerMove(Utility::Direction d);

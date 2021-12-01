@@ -5,7 +5,7 @@ Entity::Entity() : m_hp{0}, m_atk{0}, m_def{0} {}
 
 Entity::~Entity() {}
 
-Utility::Direction move() { return Utility::Direction::None; }
+Utility::Direction Entity::move() { return Utility::Direction::None; }
 
 int Entity::defend(int atk) {
   int damage = ceil((100 / (100 + def())) * atk);
