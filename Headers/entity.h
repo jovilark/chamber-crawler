@@ -15,7 +15,7 @@ public:
   void setAtk(int atk) { m_atk = atk; }
   void setDef(int def) { m_def = def; }
 
-  Utility::Direction move();
+  virtual Utility::Direction move();
   virtual int defend(int atk);
   virtual int attack(Entity *defender);
   virtual Utility::Effect interacted();

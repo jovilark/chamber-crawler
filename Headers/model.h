@@ -36,7 +36,7 @@ public:
   int indiceFromLoc(Utility::Loc l);
 
 private:
-  void swapSpaces(pair<Tile *, Entity *> &p1, pair<Tile *, Entity *> &p2);
+  bool move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target);
   Entity *m_player;
   Utility::Loc m_playerLoc;
   bool m_move;

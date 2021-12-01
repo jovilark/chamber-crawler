@@ -89,26 +89,17 @@ bool Model::playerMove(Utility::Direction d) {
   auto &target = m_state[indiceFromLoc(l)];
   auto &origin = m_state[indiceFromLoc(m_playerLoc)];
 
-  // Return if tile is occupied without moving.
-  if (target.second && !target.second->permeable())
-    return false;
-  else if (!target.first->permeable())
-    return false;
-
-  // Move was successful. Update state.
-  swapSpaces(origin, target);
-  m_playerLoc = l;
-
-  return true;
+  bool result = move(origin, target);
+  if (result) m_playerLoc = l;
+  return result;
 }
 
 void Model::enemyMove() {
   unordered_map<Entity *, bool> moved;
 
   for (int i = 0; i < m_state.size(); ++i) {
-
     auto &origin = m_state[i];
-    if (!origin.second || moved[origin.second])
+    if (!origin.second || moved[origin.second] || origin.second == m_player)
       continue;
 
     Utility::Direction d = origin.second->move();
@@ -119,12 +110,7 @@ void Model::enemyMove() {
     l = addDirectionToLoc(d, l);
 
     auto &target = m_state[indiceFromLoc(l)];
-
-    if (target.second)
-      continue;
-
-    moved[origin.second] = true;
-    swapSpaces(origin, target);
+    moved[origin.second] = move(origin, target);
   }
 }
 
@@ -148,8 +134,11 @@ int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
 }
 
-void Model::swapSpaces(pair<Tile *, Entity *> &p1, pair<Tile *, Entity *> &p2) {
-  Entity *tmp = p1.second;
-  p1.second = p2.second;
-  p2.second = tmp;
+bool Model::move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target) {
+  if (!target.first->permeable()) return false;
+  if (target.second) return false; 
+  Entity *tmp = origin.second;
+  origin.second = target.second;
+  target.second = tmp;
+  return true;
 }
