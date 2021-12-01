@@ -7,6 +7,7 @@
 #include "../Headers/hwall.h"
 #include "../Headers/textview.h"
 #include "../Headers/shade.h"
+#include "../Headers/dwarf.h"
 
 using std::make_unique;
 
@@ -26,6 +27,10 @@ Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l)
         case Utility::Race::Shade:
             m_entities.push_back(make_unique<Shade>());
             break;
+
+        case Utility::Race::Dwarf:
+            m_entities.push_back(make_unique<Dwarf>());
+            break;        
         // TODO: Cases for other races
         default:
             break;
