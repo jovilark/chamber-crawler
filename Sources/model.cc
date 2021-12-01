@@ -105,9 +105,9 @@ bool Model::playerMove(Utility::Direction d) {
 void Model::enemyMove() {
   unordered_map<Entity *, bool> moved;
 
-  for (int i = 0; i < state().size(); ++i) {
+  for (int i = 0; i < m_state.size(); ++i) {
 
-    auto &origin = state()[i];
+    auto &origin = m_state[i];
     if (!origin.second || moved[origin.second])
       continue;
 
@@ -118,7 +118,7 @@ void Model::enemyMove() {
     Utility::Loc l = make_pair(x, y);
     l = addDirectionToLoc(d, l);
 
-    auto &target = state()[indiceFromLoc(l)];
+    auto &target = m_state[indiceFromLoc(l)];
 
     if (target.second)
       continue;
@@ -148,7 +148,7 @@ int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
 }
 
-void Model::swapSpaces(pair<Tile *, Entity *> p1, pair<Tile *, Entity *> p2) {
+void Model::swapSpaces(pair<Tile *, Entity *> &p1, pair<Tile *, Entity *> &p2) {
   Entity *tmp = p1.second;
   p1.second = p2.second;
   p2.second = tmp;

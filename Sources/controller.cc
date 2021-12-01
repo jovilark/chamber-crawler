@@ -28,6 +28,7 @@ void Controller::parseLayout(string file)
 void Controller::parseNewGame(char c)
 {
     m_model->generatePlayer(Utility::charToRace(c));
+    m_model->generateEnemies();
     m_model->render();
 }
 
@@ -66,5 +67,6 @@ void Controller::parseTurn(string cmd)
                 break;
         }
     }
+    m_model->enemyMove();
     m_model->render();
 }
