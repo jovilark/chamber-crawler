@@ -1,14 +1,42 @@
-
-
-[Model] ++-> [<<interface>>;Entity|+passThrough();+collected();+move();+interact();_+~Entity()_]
+[Model|
++generateCharacter(Utility::Race race, Utility::Loc l = NEEDS_RANDOM): Entity *;
++generatePlayer(Utility::Race race) : Entity *;
++generateTile(Utility::Terrain t) : Tile *;
++generateLayout(vector\<Utility::Terrain\> layout) : void;
++playerMove(Utility::Direction d) : bool;
++playerUse(Utility::Direction d) : bool;
++playerAttack(Utility::Direction d) : bool;
++setEnemyMovement(bool move) : void;
++restart() : void;
++quit() : void;
++state() : State &;
++render() : void;
++indiceFromLoc(Utility::Loc l) : int] ++-> [<<interface>>;Entity|
+    +getHp() : int;
+    +getAtk() : int;
+    +getDef() : int;
+    +setHp(int hp) : void;
+    +setAtk(int atk) : void;
+    +setDef(int def) : void;
+    +move() : Utility::Direction;
+    +defend(int atk) : int;
+    +attack() : int;
+    +interacted() : Utility::Effect ;
+    +collected() : Utility::Effect ;
+    +permeable() : bool;
+    +draw() : char;]
 [Model] ++-> [Tile]
 [Model] <- [View]
-[Model] <- [Controller]
+[Model] <- [Controller|
++parseLayout(string file) : void;
++parseNewGame(char c) : void;
++parseTurn(string cmd) : void;]
+
 [View] ^ [ConcreteView]
 
-[Entity] ^ [<<interface>>;Character|+passThrough();+move();+interact()]
+[Entity] ^ [<<interface>>;Character|+permeable();+move();+interact()]
 
-[Character] ^ [Draw]
+[Character] ^ [Drow]
 [Character] ^ [Dragon]
 [Character] ^ [Dwarf]
 [Character] ^ [Elf]
@@ -20,7 +48,6 @@
 [Character] ^ [Shade]
 [Character] ^ [Troll]
 [Character] ^ [Vampire]
-
 [Character] ^ [Decorator]
 
 [Decorator] ^ [Boost Atk]
@@ -28,7 +55,10 @@
 [Decorator] ^ [Wound Atk]
 [Decorator] ^ [Wound Def]
 
-[Entity] ^ [<<interface>>;Item|+passThrough();+collected();+interact()]
+[Entity] ^ [<<interface>>;Item|
++permeable();
++collected();
++interact()]
 
 [Item] ^ [Potion]
 [Item] ^ [Gold]
