@@ -34,7 +34,8 @@ namespace Utility
 
     enum class Race
     {
-        Shade=0
+        Shade=0,
+        Dwarf=1
     };
 
     enum class Terrain

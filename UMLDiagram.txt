@@ -1,5 +1,3 @@
-
-
 [Model|
 +generateCharacter(Utility::Race race, Utility::Loc l = NEEDS_RANDOM): Entity *;
 +generatePlayer(Utility::Race race) : Entity *;

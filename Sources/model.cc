@@ -7,6 +7,7 @@
 #include "../Headers/shade.h"
 #include "../Headers/textview.h"
 #include "../Headers/vwall.h"
+#include "../Headers/dwarf.h"
 #include <unordered_map>
 
 using std::make_unique;
@@ -20,6 +21,9 @@ Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l) {
   case Utility::Race::Shade:
     m_entities.push_back(make_unique<Shade>());
     break;
+  case Utility::Race::Dwarf:
+     m_entities.push_back(make_unique<Dwarf>());
+     break;        
   // TODO: Cases for other races
   default:
     break;
