@@ -2,83 +2,87 @@
 
 using namespace Utility;
 
-Direction Utility::strToDirection(string s)
-{
-    if (s == "nw") return Direction::NW;
-    else if (s == "no") return Direction::N;
-    else if (s == "ne") return Direction::NE;
-    else if (s == "ea") return Direction::E;
-    else if (s == "se") return Direction::SE;
-    else if (s == "so") return Direction::S;
-    else if (s == "sw") return Direction::SW;
-    else if (s == "we") return Direction::W;
-    else return Direction::None;
+Direction Utility::strToDirection(string s) {
+  if (s == "nw")
+    return Direction::NW;
+  else if (s == "no")
+    return Direction::N;
+  else if (s == "ne")
+    return Direction::NE;
+  else if (s == "ea")
+    return Direction::E;
+  else if (s == "se")
+    return Direction::SE;
+  else if (s == "so")
+    return Direction::S;
+  else if (s == "sw")
+    return Direction::SW;
+  else if (s == "we")
+    return Direction::W;
+  else
+    return Direction::None;
 }
 
-Race Utility::charToRace(char c)
-{
-    switch (c)
-    {
-        case 'S':
-            return Race::Shade;
-        default:
-            return Race::Shade;
-    }
+Race Utility::charToRace(char c) {
+  switch (c) {
+  case 'S':
+    return Race::Shade;
+  case 'W':
+    return Race::Dwarf;
+  default:
+    return Race::Shade;
+  }
 }
 
-Terrain Utility::charToTerrain(char c)
-{
-    switch (c)
-    {
-        case '.':
-            return Terrain::Floor;
-        case '#':
-            return Terrain::Passage;
-        case '+':
-            return Terrain::Door;
-        case '-':
-            return Terrain::HWall;
-        case '|':
-            return Terrain::VWall;
-        default:
-            return Terrain::None;
-    }
+Terrain Utility::charToTerrain(char c) {
+  switch (c) {
+  case '.':
+    return Terrain::Floor;
+  case '#':
+    return Terrain::Passage;
+  case '+':
+    return Terrain::Door;
+  case '-':
+    return Terrain::HWall;
+  case '|':
+    return Terrain::VWall;
+  default:
+    return Terrain::None;
+  }
 }
 
-Loc Utility::addDirectionToLoc(Direction d, Loc l)
-{
-    switch (d)
-    {
-        case Direction::NW:
-            l.first -= 1;
-            l.second -= 1;
-            break;
-        case Direction::N:
-            l.second -= 1;
-            break;
-        case Direction::NE:
-            l.first += 1;
-            l.second -= 1;
-            break;
-        case Direction::E:
-            l.first += 1;
-            break;
-        case Direction::SE:
-            l.first += 1;
-            l.second += 1;
-            break;
-        case Direction::S:
-            l.second += 1;
-            break;
-        case Direction::SW:
-            l.first -= 1;
-            l.second += 1;
-            break;
-        case Direction::W:
-            l.first -= 1;
-            break;
-        default:
-            break;
-    }
-    return l;
+Loc Utility::addDirectionToLoc(Direction d, Loc l) {
+  switch (d) {
+  case Direction::NW:
+    l.first -= 1;
+    l.second -= 1;
+    break;
+  case Direction::N:
+    l.second -= 1;
+    break;
+  case Direction::NE:
+    l.first += 1;
+    l.second -= 1;
+    break;
+  case Direction::E:
+    l.first += 1;
+    break;
+  case Direction::SE:
+    l.first += 1;
+    l.second += 1;
+    break;
+  case Direction::S:
+    l.second += 1;
+    break;
+  case Direction::SW:
+    l.first -= 1;
+    l.second += 1;
+    break;
+  case Direction::W:
+    l.first -= 1;
+    break;
+  default:
+    break;
+  }
+  return l;
 }
