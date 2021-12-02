@@ -68,5 +68,6 @@ void Controller::parseTurn(string cmd)
         }
     }
     m_model->enemyMove();
+    m_model->enemyAttack();
     m_model->render();
 }

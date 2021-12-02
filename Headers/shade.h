@@ -8,7 +8,6 @@ class Shade : public Character
 public:
     Shade();
     ~Shade() = default;
-    bool invulnerable() override;
     char draw();
 private:
     static const int DEFAULT_HP = 125;

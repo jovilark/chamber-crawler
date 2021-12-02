@@ -4,3 +4,8 @@ SmallTreasure::SmallTreasure()
 {
     setType(Utility::Type::SmallTreasure);
 }
+
+char SmallTreasure::draw()
+{
+    return 'G';
+}

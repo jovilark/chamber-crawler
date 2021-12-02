@@ -34,34 +34,34 @@ Entity *Model::generateCharacter(Utility::Type Type, Utility::Loc l) {
   case Utility::Type::Shade:
     m_entities.push_back(make_unique<Shade>());
     break;
-  case Utility::Race::Drow:
+  case Utility::Type::Drow:
     m_entities.push_back(make_unique<Drow>());
     break;
-  case Utility::Race::Vampire:
+  case Utility::Type::Vampire:
     m_entities.push_back(make_unique<Vampire>());
     break;
-  case Utility::Race::Troll:
+  case Utility::Type::Troll:
     m_entities.push_back(make_unique<Troll>());
     break;
-  case Utility::Race::Goblin:
+  case Utility::Type::Goblin:
     m_entities.push_back(make_unique<Goblin>());
     break;
-  case Utility::Race::Human:
+  case Utility::Type::Human:
     m_entities.push_back(make_unique<Human>());
     break;
-  case Utility::Race::Dwarf:
+  case Utility::Type::Dwarf:
     m_entities.push_back(make_unique<Dwarf>());
     break;
-  case Utility::Race::Elf:
+  case Utility::Type::Elf:
     m_entities.push_back(make_unique<Elf>());
     break;
-  case Utility::Race::Orcs:
+  case Utility::Type::Orcs:
     m_entities.push_back(make_unique<Orcs>());
     break;
-  case Utility::Race::Merchant:
+  case Utility::Type::Merchant:
     m_entities.push_back(make_unique<Merchant>());
     break;
-  case Utility::Race::Halfling:
+  case Utility::Type::Halfling:
     m_entities.push_back(make_unique<Halfling>());
     break;
   default:
@@ -92,12 +92,12 @@ void Model::generateEnemies()
   // If several spawn in same area, only last one is kept, other is lost
   // IT is possible to spawn someone outside the map, if giving out of bounds coordinates
   // Coordinates not accurate???
-  generateCharacter(Utility::Race::Human, make_pair(18, 18));
-  generateCharacter(Utility::Race::Dwarf, make_pair(18, 19));
-  generateCharacter(Utility::Race::Elf, make_pair(18, 20));
-  generateCharacter(Utility::Race::Orcs, make_pair(15, 21));
-  generateCharacter(Utility::Race::Merchant, make_pair(18, 21));
-  generateCharacter(Utility::Race::Halfling, make_pair(19, 21));
+  generateCharacter(Utility::Type::Human, make_pair(18, 18));
+  generateCharacter(Utility::Type::Dwarf, make_pair(18, 19));
+  generateCharacter(Utility::Type::Elf, make_pair(18, 20));
+  generateCharacter(Utility::Type::Orcs, make_pair(15, 21));
+  generateCharacter(Utility::Type::Merchant, make_pair(18, 21));
+  generateCharacter(Utility::Type::Halfling, make_pair(19, 21));
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {
@@ -169,6 +169,8 @@ void Model::enemyAttack() {
   {
     for (int dY = -1; dY < 2; ++dY)
     {
+      if (dX == 0 && dY == 0) continue;
+
       Utility::Loc l = make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
       auto &attacker = m_state[indiceFromLoc(l)];
       if (!attacker.second) continue;
@@ -311,4 +313,5 @@ bool Model::parseEffect(Utility::Effect e)
   default:
     return false;
   }
+  return true;
 }

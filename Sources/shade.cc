@@ -8,11 +8,6 @@ Shade::Shade()
     setType(Utility::Type::Shade);
 }
 
-bool Shade::invulnerable()
-{
-    return false;
-}
-
 char Shade::draw()
 {
     return 'S';
