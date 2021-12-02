@@ -35,7 +35,16 @@ namespace Utility
     enum class Race
     {
         Shade=0,
-        Dwarf=1
+        Drow=1,
+        Vampire=2,
+        Troll=3,
+        Goblin=4,
+        Human=5,
+        Dwarf=6,
+        Elf=7,
+        Orcs=8,
+        Merchant=9,
+        Halfling=10
     };
 
     enum class Terrain

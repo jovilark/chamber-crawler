@@ -27,8 +27,14 @@ Race Utility::charToRace(char c) {
   switch (c) {
   case 'S':
     return Race::Shade;
-  case 'W':
-    return Race::Dwarf;
+  case 'D':
+    return Race::Drow;
+  case 'V':
+    return Race::Vampire;
+  case 'T':
+    return Race::Troll;
+  case 'G':
+    return Race::Goblin;
   default:
     return Race::Shade;
   }

@@ -8,6 +8,15 @@
 #include "../Headers/shade.h"
 #include "../Headers/textview.h"
 #include "../Headers/vwall.h"
+#include "../Headers/drow.h"
+#include "../Headers/elf.h"
+#include "../Headers/goblin.h"
+#include "../Headers/halfling.h"
+#include "../Headers/human.h"
+#include "../Headers/merchant.h"
+#include "../Headers/orcs.h"
+#include "../Headers/troll.h"
+#include "../Headers/vampire.h"
 #include <unordered_map>
 
 using std::make_unique;
@@ -22,9 +31,47 @@ Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l) {
   case Utility::Race::Shade:
     m_entities.push_back(make_unique<Shade>());
     break;
+
+  case Utility::Race::Drow:
+    m_entities.push_back(make_unique<Drow>());
+    break;
+
+  case Utility::Race::Vampire:
+    m_entities.push_back(make_unique<Vampire>());
+    break;
+
+  case Utility::Race::Troll:
+    m_entities.push_back(make_unique<Troll>());
+    break;
+
+  case Utility::Race::Goblin:
+    m_entities.push_back(make_unique<Goblin>());
+    break;
+
+  case Utility::Race::Human:
+    m_entities.push_back(make_unique<Human>());
+    break;
+
   case Utility::Race::Dwarf:
     m_entities.push_back(make_unique<Dwarf>());
     break;
+
+  case Utility::Race::Elf:
+    m_entities.push_back(make_unique<Elf>());
+    break;
+    
+  case Utility::Race::Orcs:
+    m_entities.push_back(make_unique<Orcs>());
+    break;
+
+  case Utility::Race::Merchant:
+    m_entities.push_back(make_unique<Merchant>());
+    break;
+
+  case Utility::Race::Halfling:
+    m_entities.push_back(make_unique<Halfling>());
+    break;
+  
   default:
     break;
   }
@@ -49,8 +96,15 @@ Entity *Model::generatePlayer(Utility::Race race) {
 }
 
 void Model::generateEnemies()
-{
-  generateCharacter(Utility::Race::Dwarf, make_pair(18, 18));
+{ // If several spawn in same area, only last one is kept, other is lost
+// IT is possible to spawn someone outside the map, if giving out of bounds coordinates
+// Coordinates not accurate???
+  generateCharacter(Utility::Race::Human, make_pair(18, 18));
+  generateCharacter(Utility::Race::Dwarf, make_pair(18, 19));
+  generateCharacter(Utility::Race::Elf, make_pair(18, 20));
+  generateCharacter(Utility::Race::Orcs, make_pair(15, 21));
+  generateCharacter(Utility::Race::Merchant, make_pair(18, 21));
+  generateCharacter(Utility::Race::Halfling, make_pair(19, 21));
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {
