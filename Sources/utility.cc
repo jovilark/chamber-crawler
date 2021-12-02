@@ -26,9 +26,15 @@ Direction Utility::strToDirection(string s) {
 Type Utility::charToType(char c) {
   switch (c) {
   case 's':
-    return Type::Shade;
-  case 'w':
-    return Type::Dwarf;
+    return Race::Shade;
+  case 'd':
+    return Race::Drow;
+  case 'v':
+    return Race::Vampire;
+  case 't':
+    return Race::Troll;
+  case 'g':
+    return Race::Goblin;
   default:
     return Type::None;
   }

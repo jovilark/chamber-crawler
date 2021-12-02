@@ -39,13 +39,22 @@ namespace Utility
 
     enum class Type
     {
-        None=0,
-        SmallTreasure=1,
-        NormalTreasure=2,
-        MerchantTreasure=3,
-        DragonTreasure=4,
-        Shade=5,
-        Dwarf=6
+        Shade=0,
+        Drow=1,
+        Vampire=2,
+        Troll=3,
+        Goblin=4,
+        Human=5,
+        Dwarf=6,
+        Elf=7,
+        Orcs=8,
+        Merchant=9,
+        Halfling=10,
+        SmallTreasure=11,
+        NormalTreasure=12,
+        MerchantTreasure=13,
+        DragonTreasure=14,
+        None=15
     };
 
     enum class Terrain
