@@ -11,6 +11,7 @@ public:
   virtual int hp() { return m_hp; }
   virtual int atk() { return m_atk; }
   virtual int def() { return m_def; }
+  virtual bool invulnerable() { return true; }
   void setHp(int hp) { m_hp = hp; }
   void setAtk(int atk) { m_atk = atk; }
   void setDef(int def) { m_def = def; }

@@ -9,9 +9,12 @@
 #include "../Headers/textview.h"
 #include "../Headers/vwall.h"
 #include <unordered_map>
+#include <iostream>
 
 using std::make_unique;
 using std::unordered_map;
+using std::cout;
+using std::endl;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
@@ -119,9 +122,14 @@ bool Model::playerUse(Utility::Direction d) {
   return false;
 }
 
+// Returns true if an enemy was killed, false otherwise.
+// Attempts to attack an enemy in the direction.
 bool Model::playerAttack(Utility::Direction d) {
-  // Attack and update state.
-  return false;
+  Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
+  auto &attacker = m_state[indiceFromLoc(m_playerLoc)];
+  auto &target = m_state[indiceFromLoc(l)];
+
+  return attack(attacker, target);
 }
 
 void Model::restart() {}
@@ -141,4 +149,36 @@ bool Model::move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target)
   origin.second = target.second;
   target.second = tmp;
   return true;
+}
+
+bool Model::attack(pair<Tile *, Entity *> &attacker, pair<Tile *, Entity *> &target)
+{
+  if (!attacker.second) return false;
+  if (!target.second) return false;
+
+  int hp = attacker.second->attack(target.second);
+  bool died = hp < 0;
+  if (died) 
+  {
+    removeEntity(target.second);
+    target.second = nullptr;
+  }
+
+  // TODO: Attack message
+  cout << hp << endl;
+
+  return died;
+}
+
+void Model::removeEntity(Entity *e)
+{
+  for (int i = 0; i < m_entities.size(); ++i)
+  {
+    auto &x = m_entities[i];
+    if (x.get() == e) 
+    {
+      m_entities.erase(m_entities.begin() + i);
+      return;
+    }
+  }
 }

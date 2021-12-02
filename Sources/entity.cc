@@ -1,13 +1,14 @@
 #include "../Headers/entity.h"
 #include <cmath>
 
-Entity::Entity() : m_hp{0}, m_atk{0}, m_def{0} {}
+Entity::Entity() : m_hp{100}, m_atk{0}, m_def{0} {}
 
 Entity::~Entity() {}
 
 Utility::Direction Entity::move() { return Utility::Direction::None; }
 
 int Entity::defend(int atk) {
+  if (invulnerable()) return hp();
   int damage = ceil((100 / (100 + def())) * atk);
   setHp(hp() - damage);
   return hp();

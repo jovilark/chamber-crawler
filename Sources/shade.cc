@@ -7,6 +7,11 @@ Shade::Shade()
     setDef(Shade::DEFAULT_DEF);
 }
 
+bool Shade::invulnerable()
+{
+    return false;
+}
+
 char Shade::draw()
 {
     return 'S';

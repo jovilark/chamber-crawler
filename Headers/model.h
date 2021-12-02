@@ -37,6 +37,8 @@ public:
 
 private:
   bool move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target);
+  bool attack(pair<Tile *, Entity *> &attacker, pair<Tile *, Entity *> &target);
+  void removeEntity(Entity *e);
   Entity *m_player;
   Utility::Loc m_playerLoc;
   bool m_move;

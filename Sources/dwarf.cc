@@ -7,6 +7,11 @@ Dwarf::Dwarf()
     setDef(Dwarf::DEFAULT_DEF);
 }
 
+bool Dwarf::invulnerable()
+{
+    return false;
+}
+
 char Dwarf::draw()
 {
     return 'W';
