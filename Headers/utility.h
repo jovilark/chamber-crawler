@@ -32,10 +32,15 @@ namespace Utility
         None=3
     };
 
-    enum class Race
+    enum class Type
     {
-        Shade=0,
-        Dwarf=1
+        None=0,
+        SmallTreasure=1,
+        NormalTreasure=2,
+        MerchantTreasure=3,
+        DragonTreasure=4,
+        Shade=5,
+        Dwarf=6
     };
 
     enum class Terrain
@@ -49,9 +54,10 @@ namespace Utility
     };
     
     Direction strToDirection(string s);
-    Race charToRace(char c);
+    Type charToType(char c);
     Terrain charToTerrain(char c);
     Loc addDirectionToLoc(Direction d, Loc l);
+    string typeToString(Type t);
 };
 
 #endif // _UTILITY_H_

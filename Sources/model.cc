@@ -20,12 +20,12 @@ Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
       m_view{make_unique<TextView>()}, m_entities{}, m_tiles{} {}
 
-Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l) {
-  switch (race) {
-  case Utility::Race::Shade:
+Entity *Model::generateCharacter(Utility::Type Type, Utility::Loc l) {
+  switch (Type) {
+  case Utility::Type::Shade:
     m_entities.push_back(make_unique<Shade>());
     break;
-  case Utility::Race::Dwarf:
+  case Utility::Type::Dwarf:
     m_entities.push_back(make_unique<Dwarf>());
     break;
   default:
@@ -43,17 +43,17 @@ Entity *Model::generateCharacter(Utility::Race race, Utility::Loc l) {
   return character;
 }
 
-Entity *Model::generatePlayer(Utility::Race race) {
+Entity *Model::generatePlayer(Utility::Type Type) {
   // Temporarily assign a specified location until random works.
   m_playerLoc = make_pair(15, 15);
-  m_player = generateCharacter(race, m_playerLoc);
+  m_player = generateCharacter(Type, m_playerLoc);
 
   return m_player;
 }
 
 void Model::generateEnemies()
 {
-  generateCharacter(Utility::Race::Dwarf, make_pair(18, 18));
+  generateCharacter(Utility::Type::Dwarf, make_pair(18, 18));
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {
@@ -117,6 +117,21 @@ void Model::enemyMove() {
   }
 }
 
+void Model::enemyAttack() {
+  for (int dX = -1; dX < 2; ++dX)
+  {
+    for (int dY = -1; dY < 2; ++dY)
+    {
+      Utility::Loc l = make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
+      auto &attacker = m_state[indiceFromLoc(l)];
+      if (!attacker.second) continue;
+      auto &target = m_state[indiceFromLoc(m_playerLoc)];
+
+      attack(attacker, target);
+    }
+  }
+}
+
 bool Model::playerUse(Utility::Direction d) {
   // Use and update state.
   return false;
@@ -156,17 +171,18 @@ bool Model::attack(pair<Tile *, Entity *> &attacker, pair<Tile *, Entity *> &tar
   if (!attacker.second) return false;
   if (!target.second) return false;
 
+  int oldHp = target.second->hp();
   int hp = attacker.second->attack(target.second);
-  bool died = hp < 0;
-  if (died) 
+  
+
+  printAttack(attacker.second, target.second, oldHp - hp);
+
+  bool died = hp <= 0;
+  if (died)
   {
     removeEntity(target.second);
     target.second = nullptr;
   }
-
-  // TODO: Attack message
-  cout << hp << endl;
-
   return died;
 }
 
@@ -181,4 +197,14 @@ void Model::removeEntity(Entity *e)
       return;
     }
   }
+}
+
+void Model::printAttack(Entity *attacker, Entity *defender, int damage)
+{
+  if (attacker == m_player) cout << "PC";
+  else cout << Utility::typeToString(attacker->type());
+  cout << " deals " << damage << " damage to ";
+  if (defender == m_player) cout << "PC";
+  else cout << Utility::typeToString(defender->type());
+  cout << " (" << defender->hp() << ")." << endl;
 }

@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     Controller controller{};
     if (argc > 1) controller.parseLayout(string(argv[1]));
     
-    cout << "Enter your race:" << endl;
+    cout << "Enter your Type:" << endl;
     char c;
     cin >> c;
     controller.parseNewGame(c);

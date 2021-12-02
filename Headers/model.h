@@ -19,14 +19,15 @@ public:
   Model();
   ~Model() = default;
 
-  Entity *generateCharacter(Utility::Race race, Utility::Loc l = NEEDS_RANDOM);
-  Entity *generatePlayer(Utility::Race race);
+  Entity *generateCharacter(Utility::Type Type, Utility::Loc l = NEEDS_RANDOM);
+  Entity *generatePlayer(Utility::Type Type);
   void generateEnemies();
   Tile *generateTile(Utility::Terrain t);
   void generateLayout(vector<Utility::Terrain> layout);
   bool playerMove(Utility::Direction d);
   void enemyMove();
   bool playerUse(Utility::Direction d);
+  void enemyAttack();
   bool playerAttack(Utility::Direction d);
   void setEnemyMovement(bool move) { m_move = move; }
   void restart();
@@ -39,6 +40,7 @@ private:
   bool move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target);
   bool attack(pair<Tile *, Entity *> &attacker, pair<Tile *, Entity *> &target);
   void removeEntity(Entity *e);
+  void printAttack(Entity *attacker, Entity *defender, int damage);
   Entity *m_player;
   Utility::Loc m_playerLoc;
   bool m_move;
