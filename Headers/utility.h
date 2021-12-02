@@ -26,10 +26,15 @@ namespace Utility
 
     enum class Effect
     {  
-        Atk=0,
-        Def=1,
-        Score=2,
-        None=3
+        None=0,
+        SmallTreasure=1,
+        NormalTreasure=2,
+        MerchantTreasure=3,
+        DragonTreasure=4,
+        AtkUp=5,
+        AtkDown=6,
+        DefUp=7,
+        DefDown=8
     };
 
     enum class Type

@@ -9,7 +9,8 @@
 
 using std::unique_ptr;
 using std::vector;
-using State = vector<pair<Tile *, Entity *>>;
+using Node = pair<Tile *, Entity *>;
+using State = vector<Node>;
 using std::make_pair;
 
 static const Utility::Loc NEEDS_RANDOM = make_pair(-1, -1);
@@ -37,10 +38,13 @@ public:
   int indiceFromLoc(Utility::Loc l);
 
 private:
-  bool move(pair<Tile *, Entity *> &origin, pair<Tile *, Entity *> &target);
-  bool attack(pair<Tile *, Entity *> &attacker, pair<Tile *, Entity *> &target);
+  bool move(Node &origin, Node &target);
+  bool attack(Node &attacker, Node &target);
   void removeEntity(Entity *e);
   void printAttack(Entity *attacker, Entity *defender, int damage);
+  bool collect(Node &target);
+  bool interact(Node &target);
+  bool parseEffect(Utility::Effect e);
   Entity *m_player;
   Utility::Loc m_playerLoc;
   bool m_move;
@@ -48,6 +52,7 @@ private:
   unique_ptr<View> m_view;
   vector<unique_ptr<Entity>> m_entities;
   vector<unique_ptr<Tile>> m_tiles;
+  int m_score;
 };
 
 #endif // _MODEL_H_
