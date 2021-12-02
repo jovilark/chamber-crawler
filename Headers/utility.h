@@ -26,13 +26,18 @@ namespace Utility
 
     enum class Effect
     {  
-        Atk=0,
-        Def=1,
-        Score=2,
-        None=3
+        None=0,
+        SmallTreasure=1,
+        NormalTreasure=2,
+        MerchantTreasure=3,
+        DragonTreasure=4,
+        AtkUp=5,
+        AtkDown=6,
+        DefUp=7,
+        DefDown=8
     };
 
-    enum class Race
+    enum class Type
     {
         Shade=0,
         Drow=1,
@@ -44,7 +49,12 @@ namespace Utility
         Elf=7,
         Orcs=8,
         Merchant=9,
-        Halfling=10
+        Halfling=10,
+        SmallTreasure=11,
+        NormalTreasure=12,
+        MerchantTreasure=13,
+        DragonTreasure=14,
+        None=15
     };
 
     enum class Terrain
@@ -58,9 +68,10 @@ namespace Utility
     };
     
     Direction strToDirection(string s);
-    Race charToRace(char c);
+    Type charToType(char c);
     Terrain charToTerrain(char c);
     Loc addDirectionToLoc(Direction d, Loc l);
+    string typeToString(Type t);
 };
 
 #endif // _UTILITY_H_

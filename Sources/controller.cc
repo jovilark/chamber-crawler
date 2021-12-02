@@ -27,7 +27,7 @@ void Controller::parseLayout(string file)
 
 void Controller::parseNewGame(char c)
 {
-    m_model->generatePlayer(Utility::charToRace(c));
+    m_model->generatePlayer(Utility::charToType(c));
     m_model->generateEnemies();
     m_model->render();
 }

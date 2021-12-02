@@ -23,20 +23,20 @@ Direction Utility::strToDirection(string s) {
     return Direction::None;
 }
 
-Race Utility::charToRace(char c) {
+Type Utility::charToType(char c) {
   switch (c) {
-  case 'S':
+  case 's':
     return Race::Shade;
-  case 'D':
+  case 'd':
     return Race::Drow;
-  case 'V':
+  case 'v':
     return Race::Vampire;
-  case 'T':
+  case 't':
     return Race::Troll;
-  case 'G':
+  case 'g':
     return Race::Goblin;
   default:
-    return Race::Shade;
+    return Type::None;
   }
 }
 
@@ -91,4 +91,16 @@ Loc Utility::addDirectionToLoc(Direction d, Loc l) {
     break;
   }
   return l;
+}
+
+string Utility::typeToString(Type t)
+{
+  switch (t) {
+  case Type::Shade:
+    return "Shade";
+  case Type::Dwarf:
+    return "Dwarf";
+  default:
+    return "None";
+  }
 }

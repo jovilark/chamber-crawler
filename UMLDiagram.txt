@@ -1,6 +1,6 @@
 [Model|
-+generateCharacter(Utility::Race race, Utility::Loc l = NEEDS_RANDOM): Entity *;
-+generatePlayer(Utility::Race race) : Entity *;
++generateCharacter(Utility::Type Type, Utility::Loc l = NEEDS_RANDOM): Entity *;
++generatePlayer(Utility::Type Type) : Entity *;
 +generateTile(Utility::Terrain t) : Tile *;
 +generateLayout(vector\<Utility::Terrain\> layout) : void;
 +playerMove(Utility::Direction d) : bool;

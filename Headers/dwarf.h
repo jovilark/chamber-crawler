@@ -8,6 +8,7 @@ class Dwarf : public Character
 public:
     Dwarf();
     ~Dwarf() = default;
+    bool invulnerable() override;
     char draw();
 private:
     static const int DEFAULT_HP = 100;
