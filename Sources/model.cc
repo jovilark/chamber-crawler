@@ -92,12 +92,12 @@ void Model::generateEnemies()
   // If several spawn in same area, only last one is kept, other is lost
   // IT is possible to spawn someone outside the map, if giving out of bounds coordinates
   // Coordinates not accurate???
-  generateCharacter(Utility::Type::Human, make_pair(18, 18));
-  generateCharacter(Utility::Type::Dwarf, make_pair(18, 19));
-  generateCharacter(Utility::Type::Elf, make_pair(18, 20));
-  generateCharacter(Utility::Type::Orcs, make_pair(15, 21));
-  generateCharacter(Utility::Type::Merchant, make_pair(18, 21));
-  generateCharacter(Utility::Type::Halfling, make_pair(19, 21));
+  generateCharacter(Utility::Type::Human, make_pair(15, 20));
+  generateCharacter(Utility::Type::Dwarf, make_pair(16, 20));
+  generateCharacter(Utility::Type::Elf, make_pair(17, 20));
+  generateCharacter(Utility::Type::Orcs, make_pair(10, 15));
+  generateCharacter(Utility::Type::Merchant, make_pair(10, 16));
+  generateCharacter(Utility::Type::Halfling, make_pair(10, 17));
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {

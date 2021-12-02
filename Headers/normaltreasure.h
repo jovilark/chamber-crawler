@@ -8,6 +8,7 @@ class NormalTreasure : public Item
 public:
     NormalTreasure();
     ~NormalTreasure() = default;
+    bool permeable();
     char draw();
 private:
 };

@@ -8,6 +8,7 @@ class MerchantTreasure : public Item
 public:
     MerchantTreasure();
     ~MerchantTreasure() = default;
+    bool permeable();
     char draw();
 private:
 };
