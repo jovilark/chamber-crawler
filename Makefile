@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++14 -MMD -g
+CXXFLAGS=-std=c++14 -MMD -g -Wall
 
 INCLUDEDIR=Headers
 SOURCEDIR=Sources

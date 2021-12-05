@@ -1,12 +1,15 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
 
+#include "chamber.h"
 #include "character.h"
 #include "entity.h"
 #include "tile.h"
 #include "utility.h"
 #include "view.h"
+#include <iostream>
 
+using std::make_unique;
 using std::unique_ptr;
 using std::vector;
 using Node = pair<Tile *, Entity *>;
@@ -14,14 +17,37 @@ using State = vector<Node>;
 using std::make_pair;
 
 static const Utility::Loc NEEDS_RANDOM = make_pair(-1, -1);
+static const int NEEDS_RANDOM_CHAMBER = -1;
 
 class Model {
 public:
   Model();
   ~Model() = default;
-
-  Entity *generateCharacter(Utility::Type Type, Utility::Loc l = NEEDS_RANDOM);
-  Entity *generatePlayer(Utility::Type Type);
+  void generateChambers();
+  Loc LocInChamber(int chamber_num);
+  template <typename EntityType>
+  Entity *generateCharacter(Loc l = NEEDS_RANDOM,
+                            int chamber_num = NEEDS_RANDOM_CHAMBER) {
+    m_entities.push_back(make_unique<EntityType>());
+    Entity *character = m_entities.back().get();
+    if (chamber_num == NEEDS_RANDOM_CHAMBER) {
+      character->setChamberNum(rand() % m_chambers.size());
+    } else {
+      character->setChamberNum(chamber_num);
+    }
+    if (l == NEEDS_RANDOM) {
+      l = LocInChamber(character->getChamberNum());
+    }
+    m_state[indiceFromLoc(l)].second = character;
+    return character;
+  }
+  template <typename EntityType> Entity *generatePlayer() {
+    // Temporarily assign a specified location until random works.
+    int chamber_num = rand() % m_chambers.size();
+    m_playerLoc = LocInChamber(chamber_num);
+    m_player = generateCharacter<EntityType>(m_playerLoc, chamber_num);
+    return m_player;
+  }
   void generateEnemies();
   Tile *generateTile(Utility::Terrain t);
   void generateLayout(vector<Utility::Terrain> layout);
@@ -52,6 +78,7 @@ private:
   unique_ptr<View> m_view;
   vector<unique_ptr<Entity>> m_entities;
   vector<unique_ptr<Tile>> m_tiles;
+  vector<Chamber> m_chambers;
   int m_score;
 };
 

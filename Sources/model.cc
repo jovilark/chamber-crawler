@@ -1,103 +1,83 @@
 #include "../Headers/model.h"
+#include "../Headers/chamber.h"
 #include "../Headers/door.h"
-#include "../Headers/dwarf.h"
-#include "../Headers/floor.h"
-#include "../Headers/hwall.h"
-#include "../Headers/none.h"
-#include "../Headers/passage.h"
-#include "../Headers/shade.h"
-#include "../Headers/textview.h"
-#include "../Headers/vwall.h"
 #include "../Headers/drow.h"
+#include "../Headers/dwarf.h"
 #include "../Headers/elf.h"
+#include "../Headers/floor.h"
 #include "../Headers/goblin.h"
 #include "../Headers/halfling.h"
 #include "../Headers/human.h"
+#include "../Headers/hwall.h"
 #include "../Headers/merchant.h"
+#include "../Headers/none.h"
 #include "../Headers/orcs.h"
+#include "../Headers/passage.h"
+#include "../Headers/shade.h"
+#include "../Headers/textview.h"
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
-#include <unordered_map>
+#include "../Headers/vwall.h"
 #include <iostream>
+#include <unordered_map>
 
-using std::make_unique;
-using std::unordered_map;
 using std::cout;
 using std::endl;
+using std::make_unique;
+using std::unordered_map;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
       m_view{make_unique<TextView>()}, m_entities{}, m_tiles{}, m_score{0} {}
 
-Entity *Model::generateCharacter(Utility::Type Type, Utility::Loc l) {
-  switch (Type) {
-  case Utility::Type::Shade:
-    m_entities.push_back(make_unique<Shade>());
-    break;
-  case Utility::Type::Drow:
-    m_entities.push_back(make_unique<Drow>());
-    break;
-  case Utility::Type::Vampire:
-    m_entities.push_back(make_unique<Vampire>());
-    break;
-  case Utility::Type::Troll:
-    m_entities.push_back(make_unique<Troll>());
-    break;
-  case Utility::Type::Goblin:
-    m_entities.push_back(make_unique<Goblin>());
-    break;
-  case Utility::Type::Human:
-    m_entities.push_back(make_unique<Human>());
-    break;
-  case Utility::Type::Dwarf:
-    m_entities.push_back(make_unique<Dwarf>());
-    break;
-  case Utility::Type::Elf:
-    m_entities.push_back(make_unique<Elf>());
-    break;
-  case Utility::Type::Orcs:
-    m_entities.push_back(make_unique<Orcs>());
-    break;
-  case Utility::Type::Merchant:
-    m_entities.push_back(make_unique<Merchant>());
-    break;
-  case Utility::Type::Halfling:
-    m_entities.push_back(make_unique<Halfling>());
-    break;
-  default:
-    break;
-  }
-
-  Entity *character = m_entities.back().get();
-
-  if (l == NEEDS_RANDOM) {
-    // TODO: Random character location in a chamber
-    // update 'l' with new random location.
-  }
-
-  m_state[indiceFromLoc(l)].second = character;
-  return character;
+void Model::generateChambers() {
+  Chamber chamber1 = vector<Loc>{Loc(2, 2), Loc(29, 2), Loc(29, 7), Loc(2, 7)};
+  Chamber chamber2 = vector<Loc>{
+      Loc(38, 2), Loc(62, 2), Loc(62, 4),  Loc(70, 4),  Loc(70, 5), Loc(73, 5),
+      Loc(73, 6), Loc(76, 6), Loc(76, 13), Loc(60, 13), Loc(60, 7), Loc(38, 7)};
+  Chamber chamber3 =
+      vector<Loc>{Loc(37, 9), Loc(50, 9), Loc(50, 13), Loc(37, 13)};
+  Chamber chamber4 =
+      vector<Loc>{Loc(3, 14), Loc(25, 14), Loc(25, 22), Loc(3, 22)};
+  Chamber chamber5 = vector<Loc>{Loc(76, 15), Loc(76, 22), Loc(36, 22),
+                                 Loc(36, 18), Loc(64, 18), Loc(64, 15)};
+  m_chambers.push_back(chamber1);
+  m_chambers.push_back(chamber2);
+  m_chambers.push_back(chamber3);
+  m_chambers.push_back(chamber4);
+  m_chambers.push_back(chamber5);
 }
 
-Entity *Model::generatePlayer(Utility::Type Type) {
-  // Temporarily assign a specified location until random works.
-  m_playerLoc = make_pair(15, 15);
-  m_player = generateCharacter(Type, m_playerLoc);
-
-  return m_player;
+Loc Model::LocInChamber(int chamber_num) {
+  Loc l = NEEDS_RANDOM;
+  while (!m_chambers[chamber_num].inChamber(l)) {
+    l = make_pair(rand() % (m_chambers[chamber_num].upper_bound.first -
+                            m_chambers[chamber_num].lower_bound.first - 1) +
+                      m_chambers[chamber_num].lower_bound.first + 1,
+                  rand() % (m_chambers[chamber_num].upper_bound.second -
+                            m_chambers[chamber_num].lower_bound.second - 1) +
+                      m_chambers[chamber_num].lower_bound.second + 1);
+  }
+  return l;
 }
 
-void Model::generateEnemies()
-{ 
-  // If several spawn in same area, only last one is kept, other is lost
-  // IT is possible to spawn someone outside the map, if giving out of bounds coordinates
-  // Coordinates not accurate???
-  generateCharacter(Utility::Type::Human, make_pair(15, 20));
-  generateCharacter(Utility::Type::Dwarf, make_pair(16, 20));
-  generateCharacter(Utility::Type::Elf, make_pair(17, 20));
-  generateCharacter(Utility::Type::Orcs, make_pair(10, 15));
-  generateCharacter(Utility::Type::Merchant, make_pair(10, 16));
-  generateCharacter(Utility::Type::Halfling, make_pair(10, 17));
+void Model::generateEnemies() {
+  for (int i = 0; i < 20; i++) {
+    int rand_num = rand() % 18;
+    if (rand_num < 4) {
+      generateCharacter<Human>();
+    } else if (rand_num >= 4 && rand_num < 7) {
+      generateCharacter<Dwarf>();
+    } else if (rand_num >= 7 && rand_num < 12) {
+      generateCharacter<Halfling>();
+    } else if (rand_num >= 12 && rand_num < 14) {
+      generateCharacter<Elf>();
+    } else if (rand_num >= 14 && rand_num < 16) {
+      generateCharacter<Orcs>();
+    } else {
+      generateCharacter<Merchant>();
+    }
+  }
 }
 
 Tile *Model::generateTile(Utility::Terrain t) {
@@ -137,8 +117,7 @@ bool Model::playerMove(Utility::Direction d) {
   auto &origin = m_state[indiceFromLoc(m_playerLoc)];
 
   bool result = move(origin, target);
-  if (result) 
-  {
+  if (result) {
     m_playerLoc = l;
   }
   return result;
@@ -165,15 +144,16 @@ void Model::enemyMove() {
 }
 
 void Model::enemyAttack() {
-  for (int dX = -1; dX < 2; ++dX)
-  {
-    for (int dY = -1; dY < 2; ++dY)
-    {
-      if (dX == 0 && dY == 0) continue;
+  for (int dX = -1; dX < 2; ++dX) {
+    for (int dY = -1; dY < 2; ++dY) {
+      if (dX == 0 && dY == 0)
+        continue;
 
-      Utility::Loc l = make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
+      Utility::Loc l =
+          make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
       auto &attacker = m_state[indiceFromLoc(l)];
-      if (!attacker.second) continue;
+      if (!attacker.second)
+        continue;
       auto &target = m_state[indiceFromLoc(m_playerLoc)];
 
       attack(attacker, target);
@@ -198,24 +178,22 @@ bool Model::playerAttack(Utility::Direction d) {
   return attack(attacker, target);
 }
 
-bool Model::collect(Node &target)
-{
-  if (!target.second) return false;
+bool Model::collect(Node &target) {
+  if (!target.second)
+    return false;
   bool result = parseEffect(target.second->collected());
-  if (result)
-  {
+  if (result) {
     removeEntity(target.second);
     target.second = nullptr;
   }
   return result;
 }
 
-bool Model::interact(Node &target)
-{
-  if (!target.second) return false;
+bool Model::interact(Node &target) {
+  if (!target.second)
+    return false;
   bool result = parseEffect(target.second->interacted());
-  if (result)
-  {
+  if (result) {
     removeEntity(target.second);
     target.second = nullptr;
   }
@@ -233,63 +211,63 @@ int Model::indiceFromLoc(Utility::Loc l) {
 }
 
 bool Model::move(Node &origin, Node &target) {
-  if (!target.first->permeable()) return false;
-  if (target.second)
-  {
-    if (!target.second->permeable()) return false;
-    else if (origin.second == m_player) collect(target);
+  if (!target.first->permeable())
+    return false;
+  if (target.second) {
+    if (!target.second->permeable())
+      return false;
+    else if (origin.second == m_player)
+      collect(target);
   }
   target.second = origin.second;
   origin.second = nullptr;
   return true;
 }
 
-bool Model::attack(Node &attacker, Node &target)
-{
-  if (!attacker.second) return false;
-  if (!target.second) return false;
+bool Model::attack(Node &attacker, Node &target) {
+  if (!attacker.second)
+    return false;
+  if (!target.second)
+    return false;
 
-  int oldHp = target.second->hp();
+  int oldHp = target.second->getHp();
   int hp = attacker.second->attack(target.second);
 
   printAttack(attacker.second, target.second, oldHp - hp);
 
   bool died = hp <= 0;
-  if (died)
-  {
+  if (died) {
     removeEntity(target.second);
     target.second = nullptr;
   }
   return died;
 }
 
-void Model::removeEntity(Entity *e)
-{
-  for (int i = 0; i < m_entities.size(); ++i)
-  {
+void Model::removeEntity(Entity *e) {
+  for (int i = 0; i < m_entities.size(); ++i) {
     auto &x = m_entities[i];
-    if (x.get() == e) 
-    {
+    if (x.get() == e) {
       m_entities.erase(m_entities.begin() + i);
       return;
     }
   }
 }
 
-void Model::printAttack(Entity *attacker, Entity *defender, int damage)
-{
-  if (attacker == m_player) cout << "PC";
-  else cout << Utility::typeToString(attacker->type());
+void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
+  if (attacker == m_player)
+    cout << "PC";
+  else
+    cout << Utility::typeToString(attacker->type());
   cout << " deals " << damage << " damage to ";
-  if (defender == m_player) cout << "PC";
-  else cout << Utility::typeToString(defender->type());
-  cout << " (" << defender->hp() << ")." << endl;
+  if (defender == m_player)
+    cout << "PC";
+  else
+    cout << Utility::typeToString(defender->type());
+  cout << " (" << defender->getHp() << ")." << endl;
 }
 
-bool Model::parseEffect(Utility::Effect e)
-{
-  switch (e)
-  {
+bool Model::parseEffect(Utility::Effect e) {
+  switch (e) {
   case Utility::Effect::SmallTreasure:
     m_score += 1;
     break;

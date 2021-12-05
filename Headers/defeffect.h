@@ -4,14 +4,14 @@
 #include "character.h"
 #include "decorator.h"
 
-class DefEffect : public Decorator
-{
+class DefEffect : public Decorator {
 public:
-    DefEffect(int val, Character *c);
-    ~DefEffect() = default;
-    int def() override;
+  DefEffect(int val, Character *c);
+  ~DefEffect() = default;
+  int getDef() override;
+
 private:
-    int m_value;
+  int m_value;
 };
 
 #endif // _DEFEFFECT_H_
