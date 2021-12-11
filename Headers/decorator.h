@@ -3,13 +3,13 @@
 
 #include "character.h"
 
-class Decorator : public Character
-{
+class Decorator : public Character {
 public:
-    Decorator(Character *c);
-    ~Decorator() = default;
+  Decorator(Character *c);
+  ~Decorator() = default;
+
 protected:
-    Character *m_c;
+  Character *m_c;
 };
 
 #endif // _DECORATOR_H_

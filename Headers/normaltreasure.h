@@ -3,13 +3,13 @@
 
 #include "item.h"
 
-class NormalTreasure : public Item
-{
+class NormalTreasure : public Item {
 public:
-    NormalTreasure();
-    ~NormalTreasure() = default;
-    bool permeable();
-    char draw();
+  NormalTreasure();
+  ~NormalTreasure() = default;
+  bool permeable();
+  char draw();
+
 private:
 };
 

@@ -1,9 +1,15 @@
 #include "../Headers/controller.h"
+#include "../Headers/door.h"
 #include "../Headers/drow.h"
+#include "../Headers/floor.h"
 #include "../Headers/goblin.h"
+#include "../Headers/hwall.h"
+#include "../Headers/none.h"
+#include "../Headers/passage.h"
 #include "../Headers/shade.h"
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
+#include "../Headers/vwall.h"
 #include <iostream>
 #include <sstream>
 
@@ -20,7 +26,25 @@ void Controller::parseLayout(string file) {
   if (inFile.is_open()) {
     while (getline(inFile, line)) {
       for (char c : line)
-        m_model->generateTile(Utility::charToTerrain(c));
+        switch (c) {
+        case '.':
+          m_model->generateTile<Floor>();
+          break;
+        case '#':
+          m_model->generateTile<Passage>();
+          break;
+        case '+':
+          m_model->generateTile<Door>();
+          break;
+        case '-':
+          m_model->generateTile<HWall>();
+          break;
+        case '|':
+          m_model->generateTile<VWall>();
+          break;
+        default:
+          m_model->generateTile<None>();
+        }
     }
     inFile.close();
   }
@@ -82,7 +106,7 @@ void Controller::parseTurn(string cmd) {
       break;
     }
   }
-  m_model->enemyMove();
-  m_model->enemyAttack();
+  m_model->enemyTurn();
+  // m_model->enemyAttack();
   m_model->render();
 }

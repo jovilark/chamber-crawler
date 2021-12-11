@@ -3,11 +3,11 @@
 
 #include "entity.h"
 
-class Item : public Entity
-{
+class Item : public Entity {
 public:
-    Item();
-    virtual ~Item() =0;
+  Item();
+  virtual ~Item() = 0;
+
 private:
 };
 

@@ -80,37 +80,6 @@ void Model::generateEnemies() {
   }
 }
 
-Tile *Model::generateTile(Utility::Terrain t) {
-  switch (t) {
-  case Utility::Terrain::Floor:
-    m_tiles.push_back(make_unique<Floor>());
-    break;
-  case Utility::Terrain::Passage:
-    m_tiles.push_back(make_unique<Passage>());
-    break;
-  case Utility::Terrain::Door:
-    m_tiles.push_back(make_unique<Door>());
-    break;
-  case Utility::Terrain::HWall:
-    m_tiles.push_back(make_unique<HWall>());
-    break;
-  case Utility::Terrain::VWall:
-    m_tiles.push_back(make_unique<VWall>());
-    break;
-  default:
-    m_tiles.push_back(make_unique<None>());
-    break;
-  }
-  Tile *tile = m_tiles.back().get();
-  m_state.push_back(make_pair(tile, nullptr));
-  return tile;
-}
-
-void Model::generateLayout(vector<Utility::Terrain> layout) {
-  for (auto t : layout)
-    generateTile(t);
-}
-
 bool Model::playerMove(Utility::Direction d) {
   Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
   auto &target = m_state[indiceFromLoc(l)];
@@ -123,8 +92,23 @@ bool Model::playerMove(Utility::Direction d) {
   return result;
 }
 
-void Model::enemyMove() {
+void Model::enemyTurn() {
   unordered_map<Entity *, bool> moved;
+  for (int dX = -1; dX < 2; ++dX) {
+    for (int dY = -1; dY < 2; ++dY) {
+      if (dX == 0 && dY == 0)
+        continue;
+
+      Utility::Loc l =
+          make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
+      auto &attacker = m_state[indiceFromLoc(l)];
+      if (!attacker.second)
+        continue;
+      auto &target = m_state[indiceFromLoc(m_playerLoc)];
+      moved[attacker.second] = true;
+      attack(attacker, target);
+    }
+  }
 
   for (int i = 0; i < m_state.size(); ++i) {
     auto &origin = m_state[i];
@@ -143,7 +127,7 @@ void Model::enemyMove() {
   }
 }
 
-void Model::enemyAttack() {
+/*void Model::enemyAttack() {
   for (int dX = -1; dX < 2; ++dX) {
     for (int dY = -1; dY < 2; ++dY) {
       if (dX == 0 && dY == 0)
@@ -159,7 +143,7 @@ void Model::enemyAttack() {
       attack(attacker, target);
     }
   }
-}
+}*/
 
 bool Model::playerUse(Utility::Direction d) {
   Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);

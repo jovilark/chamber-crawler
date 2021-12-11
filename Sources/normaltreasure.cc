@@ -1,16 +1,7 @@
 #include "../Headers/normaltreasure.h"
 
-NormalTreasure::NormalTreasure()
-{
-    setType(Utility::Type::NormalTreasure);
-}
+NormalTreasure::NormalTreasure() { setType(Utility::Type::NormalTreasure); }
 
-bool NormalTreasure::permeable()
-{
-    return true;
-}
+bool NormalTreasure::permeable() { return true; }
 
-char NormalTreasure::draw()
-{
-    return 'G';
-}
+char NormalTreasure::draw() { return 'G'; }

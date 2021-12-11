@@ -16,8 +16,8 @@ Chamber::Chamber(vector<Loc> vertices) : vertices{vertices} {
 }
 
 bool Chamber::inChamber(Loc point) {
-  int hit_edges = 0;
-  for (vector<Loc>::iterator x = vertices.begin(); x != vertices.end(); ++x) {
+  int hit_h_edges = 0, hit_v_edges = 0;
+  for (auto x = vertices.begin(); x != vertices.end(); ++x) {
     Loc point1, point2;
     point1 = *x;
     if (x + 1 != vertices.end()) {
@@ -25,17 +25,33 @@ bool Chamber::inChamber(Loc point) {
     } else {
       point2 = *vertices.begin();
     }
+    if (point1.first == point.first) {
+      if ((point.second >= point2.second && point.second <= point1.second) ||
+          (point.second <= point2.second && point.second >= point1.second)) {
+        return false;
+      }
+    }
+    if (point1.second == point.second) {
+      if ((point.first >= point2.first && point.first <= point1.first) ||
+          (point.first <= point2.first && point.first >= point1.first)) {
+        return false;
+      }
+    }
     if (point1.first > point.first) {
       if ((point.second > point2.second && point.second < point1.second) ||
           (point.second < point2.second && point.second > point1.second)) {
-        hit_edges++;
+        hit_v_edges++;
       }
     }
-    if (((point1.first <= point.first && point2.first >= point.first) ||
-         (point1.first >= point.first && point2.first <= point.first)) &&
-        point1.second == point.second && point2.second == point.second) {
-      hit_edges++;
+    if (point1.second > point.second) {
+      if ((point.first > point2.first && point.first < point1.first) ||
+          (point.first < point2.first && point.first > point1.first)) {
+        hit_h_edges++;
+      }
     }
   }
-  return hit_edges % 2;
+  if (hit_h_edges % 2 && hit_v_edges % 2) {
+    return true;
+  }
+  return false;
 }

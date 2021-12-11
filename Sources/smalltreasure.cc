@@ -1,16 +1,7 @@
 #include "../Headers/smalltreasure.h"
 
-SmallTreasure::SmallTreasure()
-{
-    setType(Utility::Type::SmallTreasure);
-}
+SmallTreasure::SmallTreasure() { setType(Utility::Type::SmallTreasure); }
 
-bool SmallTreasure::permeable()
-{
-    return true;
-}
+bool SmallTreasure::permeable() { return true; }
 
-char SmallTreasure::draw()
-{
-    return 'G';
-}
+char SmallTreasure::draw() { return 'G'; }
