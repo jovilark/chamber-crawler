@@ -1,16 +1,9 @@
 #include "../Headers/merchanttreasure.h"
 
-MerchantTreasure::MerchantTreasure()
-{
-    setType(Utility::Type::MerchantTreasure);
+MerchantTreasure::MerchantTreasure() {
+  setType(Utility::Type::MerchantTreasure);
 }
 
-bool MerchantTreasure::permeable()
-{
-    return true;
-}
+bool MerchantTreasure::permeable() { return true; }
 
-char MerchantTreasure::draw()
-{
-    return 'G';
-}
+char MerchantTreasure::draw() { return 'G'; }

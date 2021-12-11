@@ -4,14 +4,14 @@
 #include "entity.h"
 #include "utility.h"
 
-class Character : public Entity
-{
+class Character : public Entity {
 public:
-    Character();
-    virtual ~Character() =0;
+  Character();
+  virtual ~Character() = 0;
 
-    bool invulnerable();
-    Utility::Direction move();
+  bool invulnerable();
+  Utility::Direction move();
+
 private:
 };
 

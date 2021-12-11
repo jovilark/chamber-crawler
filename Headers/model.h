@@ -48,9 +48,10 @@ public:
     m_player = generateCharacter<EntityType>(m_playerLoc, chamber_num);
     return m_player;
   }
+
   void generateEnemies();
 
-  template <typename TileType> Tile *generateTile(Utility::Terrain t) {
+  template <typename TileType> Tile *generateTile() {
     m_tiles.push_back(make_unique<TileType>);
     Tile *tile = m_tiles.back().get();
     m_state.push_back(make_pair(tile, nullptr));

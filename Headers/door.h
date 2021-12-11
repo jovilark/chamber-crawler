@@ -3,11 +3,10 @@
 
 #include "tile.h"
 
-class Door : public Tile
-{
+class Door : public Tile {
 public:
-    bool permeable() { return true; }
-    char draw() { return '+'; }
+  bool permeable() { return true; }
+  char draw() { return '+'; }
 };
 
 #endif // _DOOR_H_

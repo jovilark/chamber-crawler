@@ -93,8 +93,7 @@ Loc Utility::addDirectionToLoc(Direction d, Loc l) {
   return l;
 }
 
-string Utility::typeToString(Type t)
-{
+string Utility::typeToString(Type t) {
   switch (t) {
   case Type::Shade:
     return "Shade";

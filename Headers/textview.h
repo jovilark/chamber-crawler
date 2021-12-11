@@ -3,10 +3,9 @@
 
 #include "view.h"
 
-class TextView : public View
-{
+class TextView : public View {
 public:
-    void render(State &s);
+  void render(State &s);
 };
 
 #endif // _TEXTVIEW_H_
