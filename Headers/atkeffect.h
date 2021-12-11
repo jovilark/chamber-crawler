@@ -4,14 +4,14 @@
 #include "character.h"
 #include "decorator.h"
 
-class AtkEffect : public Decorator
-{
+class AtkEffect : public Decorator {
 public:
-    AtkEffect(int val, Character *c);
-    ~AtkEffect() = default;
-    int atk() override;
+  AtkEffect(int val, Character *c);
+  ~AtkEffect() = default;
+  int getAtk() override;
+
 private:
-    int m_value;
+  int m_value;
 };
 
 #endif // _ATKEFFECT_H_

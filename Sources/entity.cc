@@ -9,13 +9,13 @@ Entity::~Entity() {}
 Utility::Direction Entity::move() { return Utility::Direction::None; }
 
 int Entity::defend(int atk) {
-  if (invulnerable()) return hp();
-  int damage = ceil((100.0f / (100.0f + (float)def())) * (float)atk);
-  setHp(hp() - damage);
-  return hp();
+  if (invulnerable()) return getHp();
+  int damage = ceil((100.0f / (100.0f + (float)getDef())) * (float)atk);
+  setHp(getHp() - damage);
+  return getHp();
 }
 
-int Entity::attack(Entity *defender) { return defender->defend(atk()); }
+int Entity::attack(Entity *defender) { return defender->defend(getAtk()); }
 
 Utility::Effect Entity::interacted() { return Utility::Effect::None; }
 

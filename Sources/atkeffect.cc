@@ -5,7 +5,7 @@ Decorator{c},
 m_value{val}
 {}
 
-int AtkEffect::atk()
+int AtkEffect::getAtk()
 {
-    return m_value + m_c->atk();
+    return m_value + m_c->getAtk();
 }
