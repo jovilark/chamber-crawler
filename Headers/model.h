@@ -38,6 +38,9 @@ public:
     if (l == NEEDS_RANDOM) {
       l = LocInChamber(character->getChamberNum());
     }
+    while (m_state[indiceFromLoc(l)].second) {
+      l = LocInChamber(character->getChamberNum());
+    }
     m_state[indiceFromLoc(l)].second = character;
     return character;
   }
@@ -52,7 +55,7 @@ public:
   void generateEnemies();
 
   template <typename TileType> Tile *generateTile() {
-    m_tiles.push_back(make_unique<TileType>);
+    m_tiles.push_back(make_unique<TileType>());
     Tile *tile = m_tiles.back().get();
     m_state.push_back(make_pair(tile, nullptr));
     return tile;
@@ -60,9 +63,9 @@ public:
 
   void generateLayout(vector<Utility::Terrain> layout);
   bool playerMove(Utility::Direction d);
-  void enemyMove();
+  void enemyTurn();
   bool playerUse(Utility::Direction d);
-  void enemyAttack();
+  //void enemyAttack();
   bool playerAttack(Utility::Direction d);
   void setEnemyMovement(bool move) { m_move = move; }
   void restart();

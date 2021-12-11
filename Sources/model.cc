@@ -92,8 +92,23 @@ bool Model::playerMove(Utility::Direction d) {
   return result;
 }
 
-void Model::enemyMove() {
+void Model::enemyTurn() {
   unordered_map<Entity *, bool> moved;
+  for (int dX = -1; dX < 2; ++dX) {
+    for (int dY = -1; dY < 2; ++dY) {
+      if (dX == 0 && dY == 0)
+        continue;
+
+      Utility::Loc l =
+          make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
+      auto &attacker = m_state[indiceFromLoc(l)];
+      if (!attacker.second)
+        continue;
+      auto &target = m_state[indiceFromLoc(m_playerLoc)];
+      moved[attacker.second] = true;
+      attack(attacker, target);
+    }
+  }
 
   for (int i = 0; i < m_state.size(); ++i) {
     auto &origin = m_state[i];
@@ -112,7 +127,7 @@ void Model::enemyMove() {
   }
 }
 
-void Model::enemyAttack() {
+/*void Model::enemyAttack() {
   for (int dX = -1; dX < 2; ++dX) {
     for (int dY = -1; dY < 2; ++dY) {
       if (dX == 0 && dY == 0)
@@ -128,7 +143,7 @@ void Model::enemyAttack() {
       attack(attacker, target);
     }
   }
-}
+}*/
 
 bool Model::playerUse(Utility::Direction d) {
   Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);

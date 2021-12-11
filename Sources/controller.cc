@@ -106,7 +106,7 @@ void Controller::parseTurn(string cmd) {
       break;
     }
   }
-  m_model->enemyMove();
-  m_model->enemyAttack();
+  m_model->enemyTurn();
+  // m_model->enemyAttack();
   m_model->render();
 }
