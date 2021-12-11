@@ -49,7 +49,14 @@ public:
     return m_player;
   }
   void generateEnemies();
-  Tile *generateTile(Utility::Terrain t);
+
+  template <typename TileType> Tile *generateTile(Utility::Terrain t) {
+    m_tiles.push_back(make_unique<TileType>);
+    Tile *tile = m_tiles.back().get();
+    m_state.push_back(make_pair(tile, nullptr));
+    return tile;
+  }
+
   void generateLayout(vector<Utility::Terrain> layout);
   bool playerMove(Utility::Direction d);
   void enemyMove();

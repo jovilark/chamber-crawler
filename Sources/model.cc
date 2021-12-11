@@ -80,37 +80,6 @@ void Model::generateEnemies() {
   }
 }
 
-Tile *Model::generateTile(Utility::Terrain t) {
-  switch (t) {
-  case Utility::Terrain::Floor:
-    m_tiles.push_back(make_unique<Floor>());
-    break;
-  case Utility::Terrain::Passage:
-    m_tiles.push_back(make_unique<Passage>());
-    break;
-  case Utility::Terrain::Door:
-    m_tiles.push_back(make_unique<Door>());
-    break;
-  case Utility::Terrain::HWall:
-    m_tiles.push_back(make_unique<HWall>());
-    break;
-  case Utility::Terrain::VWall:
-    m_tiles.push_back(make_unique<VWall>());
-    break;
-  default:
-    m_tiles.push_back(make_unique<None>());
-    break;
-  }
-  Tile *tile = m_tiles.back().get();
-  m_state.push_back(make_pair(tile, nullptr));
-  return tile;
-}
-
-void Model::generateLayout(vector<Utility::Terrain> layout) {
-  for (auto t : layout)
-    generateTile(t);
-}
-
 bool Model::playerMove(Utility::Direction d) {
   Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
   auto &target = m_state[indiceFromLoc(l)];
