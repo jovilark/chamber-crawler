@@ -9,6 +9,7 @@ public:
   ~DragonTreasure() = default;
   bool permeable();
   char draw();
+  Utility::Effect collected();
 
 private:
 };

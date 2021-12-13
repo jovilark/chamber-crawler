@@ -9,6 +9,7 @@ public:
   ~NormalTreasure() = default;
   bool permeable();
   char draw();
+  Utility::Effect collected();
 
 private:
 };

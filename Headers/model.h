@@ -25,6 +25,7 @@ public:
   ~Model() = default;
   void generateChambers();
   Loc LocInChamber(int chamber_num);
+
   template <typename EntityType>
   Entity *generateCharacter(Loc l = NEEDS_RANDOM,
                             int chamber_num = NEEDS_RANDOM_CHAMBER) {
@@ -44,7 +45,9 @@ public:
     m_state[indiceFromLoc(l)].second = character;
     return character;
   }
-  template <typename EntityType> Entity *generatePlayer() {
+
+  template <typename EntityType> 
+  Entity *generatePlayer() {
     // Temporarily assign a specified location until random works.
     int chamber_num = rand() % m_chambers.size();
     m_playerLoc = LocInChamber(chamber_num);
@@ -54,7 +57,8 @@ public:
 
   void generateEnemies();
 
-  template <typename TileType> Tile *generateTile() {
+  template <typename TileType> 
+  Tile *generateTile() {
     m_tiles.push_back(make_unique<TileType>());
     Tile *tile = m_tiles.back().get();
     m_state.push_back(make_pair(tile, nullptr));
@@ -65,7 +69,6 @@ public:
   bool playerMove(Utility::Direction d);
   void enemyTurn();
   bool playerUse(Utility::Direction d);
-  //void enemyAttack();
   bool playerAttack(Utility::Direction d);
   void setEnemyMovement(bool move) { m_move = move; }
   void restart();

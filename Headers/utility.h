@@ -31,7 +31,9 @@ enum class Effect {
   AtkUp = 5,
   AtkDown = 6,
   DefUp = 7,
-  DefDown = 8
+  DefDown = 8,
+  HpUp = 9,
+  HpDown = 10
 };
 
 enum class Type {
@@ -50,7 +52,13 @@ enum class Type {
   NormalTreasure = 12,
   MerchantTreasure = 13,
   DragonTreasure = 14,
-  None = 15
+  AtkUpPotion = 15,
+  AtkDownPotion = 16,
+  DefUpPotion = 17,
+  DefDownPotion = 18,
+  HpUpPotion = 19,
+  HpDownPotion = 20,
+  None = 21
 };
 
 enum class Terrain {

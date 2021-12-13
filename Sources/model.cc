@@ -127,24 +127,6 @@ void Model::enemyTurn() {
   }
 }
 
-/*void Model::enemyAttack() {
-  for (int dX = -1; dX < 2; ++dX) {
-    for (int dY = -1; dY < 2; ++dY) {
-      if (dX == 0 && dY == 0)
-        continue;
-
-      Utility::Loc l =
-          make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
-      auto &attacker = m_state[indiceFromLoc(l)];
-      if (!attacker.second)
-        continue;
-      auto &target = m_state[indiceFromLoc(m_playerLoc)];
-
-      attack(attacker, target);
-    }
-  }
-}*/
-
 bool Model::playerUse(Utility::Direction d) {
   Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
   auto &target = m_state[indiceFromLoc(l)];
@@ -265,12 +247,22 @@ bool Model::parseEffect(Utility::Effect e) {
     m_score += 6;
     break;
   case Utility::Effect::AtkUp:
+    m_player->setAtkBonus(m_player->getAtkBonus() + 5);
     break;
   case Utility::Effect::AtkDown:
+    m_player->setAtkBonus(m_player->getAtkBonus() - 5);
     break;
   case Utility::Effect::DefUp:
+    m_player->setDefBonus(m_player->getDefBonus() + 5);
     break;
   case Utility::Effect::DefDown:
+    m_player->setDefBonus(m_player->getDefBonus() - 5);
+    break;
+  case Utility::Effect::HpUp:
+    m_player->setHp(m_player->getHp() + 10);
+    break;
+  case Utility::Effect::HpDown:
+    m_player->setHp(m_player->getHp() - 10);
     break;
   default:
     return false;
