@@ -1,19 +1,29 @@
 #include "../Headers/model.h"
+#include "../Headers/atkdownpotion.h"
+#include "../Headers/atkuppotion.h"
 #include "../Headers/chamber.h"
+#include "../Headers/defdownpotion.h"
+#include "../Headers/defuppotion.h"
 #include "../Headers/door.h"
+#include "../Headers/dragon.h"
+#include "../Headers/dragontreasure.h"
 #include "../Headers/drow.h"
 #include "../Headers/dwarf.h"
 #include "../Headers/elf.h"
 #include "../Headers/floor.h"
 #include "../Headers/goblin.h"
 #include "../Headers/halfling.h"
+#include "../Headers/hpdownpotion.h"
+#include "../Headers/hpuppotion.h"
 #include "../Headers/human.h"
 #include "../Headers/hwall.h"
 #include "../Headers/merchant.h"
 #include "../Headers/none.h"
+#include "../Headers/normaltreasure.h"
 #include "../Headers/orcs.h"
 #include "../Headers/passage.h"
 #include "../Headers/shade.h"
+#include "../Headers/smalltreasure.h"
 #include "../Headers/textview.h"
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
@@ -28,7 +38,7 @@ using std::unordered_map;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
-      m_view{make_unique<TextView>()}, m_entities{}, m_tiles{}, m_score{0} {}
+      turn_desc{""}, m_entities{}, m_tiles{}, m_score{0} {}
 
 void Model::generateChambers() {
   Chamber chamber1 = vector<Loc>{Loc(2, 2), Loc(29, 2), Loc(29, 7), Loc(2, 7)};
@@ -61,21 +71,60 @@ Loc Model::LocInChamber(int chamber_num) {
   return l;
 }
 
-void Model::generateEnemies() {
-  for (int i = 0; i < 20; i++) {
+void Model::generateEnemies(int n) {
+  for (int i = 0; i < n; i++) {
     int rand_num = rand() % 18;
     if (rand_num < 4) {
-      generateCharacter<Human>();
+      generateEntity<Human>();
     } else if (rand_num >= 4 && rand_num < 7) {
-      generateCharacter<Dwarf>();
+      generateEntity<Dwarf>();
     } else if (rand_num >= 7 && rand_num < 12) {
-      generateCharacter<Halfling>();
+      generateEntity<Halfling>();
     } else if (rand_num >= 12 && rand_num < 14) {
-      generateCharacter<Elf>();
+      generateEntity<Elf>();
     } else if (rand_num >= 14 && rand_num < 16) {
-      generateCharacter<Orcs>();
+      generateEntity<Orcs>();
     } else {
-      generateCharacter<Merchant>();
+      generateEntity<Merchant>();
+    }
+  }
+}
+
+void Model::generateTreasure(int n) {
+  for (int i = 0; i < n; i++) {
+    int rand_num = rand() % 8;
+    if (rand_num < 5) {
+      generateEntity<NormalTreasure>();
+    } else if (rand_num >= 5 && rand_num < 6) {
+      generateEntity<DragonTreasure>();
+      generateEntity<Dragon>(NEEDS_RANDOM, m_entities.back()->getChamberNum());
+    } else {
+      generateEntity<SmallTreasure>();
+    }
+  }
+}
+
+void Model::generatePotions(int n) {
+  for (int i = 0; i < n; i++) {
+    int rand_num = rand() % 6;
+    switch (rand_num) {
+    case 0:
+      generateEntity<AtkUpPotion>();
+      break;
+    case 1:
+      generateEntity<AtkDownPotion>();
+      break;
+    case 2:
+      generateEntity<DefUpPotion>();
+      break;
+    case 3:
+      generateEntity<DefDownPotion>();
+      break;
+    case 4:
+      generateEntity<HpUpPotion>();
+      break;
+    default:
+      generateEntity<HpDownPotion>();
     }
   }
 }
@@ -123,7 +172,9 @@ void Model::enemyTurn() {
     l = addDirectionToLoc(d, l);
 
     auto &target = m_state[indiceFromLoc(l)];
-    moved[origin.second] = move(origin, target);
+    if (m_chambers[origin.second->getChamberNum()].inChamber(l)) {
+      moved[origin.second] = move(origin, target);
+    }
   }
 }
 
@@ -170,8 +221,6 @@ void Model::restart() {}
 
 void Model::quit() {}
 
-void Model::render() { m_view->render(m_state); }
-
 int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
 }
@@ -180,7 +229,7 @@ bool Model::move(Node &origin, Node &target) {
   if (!target.first->permeable())
     return false;
   if (target.second) {
-    if (!target.second->permeable())
+    if (!target.second->permeable() || origin.second != m_player)
       return false;
     else if (origin.second == m_player)
       collect(target);
@@ -221,15 +270,15 @@ void Model::removeEntity(Entity *e) {
 
 void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
   if (attacker == m_player)
-    cout << "PC";
+    turn_desc += "PC";
   else
-    cout << Utility::typeToString(attacker->type());
-  cout << " deals " << damage << " damage to ";
+    turn_desc += Utility::typeToString(attacker->type()) + " deals " +
+                 std::to_string(damage) + " damage to ";
   if (defender == m_player)
-    cout << "PC";
+    turn_desc += "PC. ";
   else
-    cout << Utility::typeToString(defender->type());
-  cout << " (" << defender->getHp() << ")." << endl;
+    turn_desc += Utility::typeToString(defender->type()) + " (" +
+                 std::to_string(defender->getHp()) + " HP). ";
 }
 
 bool Model::parseEffect(Utility::Effect e) {

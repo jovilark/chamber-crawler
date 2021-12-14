@@ -2,6 +2,7 @@
 #define _CONTROLLER_H_
 
 #include "model.h"
+#include "textview.h"
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -20,6 +21,7 @@ public:
 
 private:
   unique_ptr<Model> m_model;
+  unique_ptr<TextView> text_view;
 };
 
 #endif // _CONTROLLER_H_

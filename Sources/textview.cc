@@ -4,9 +4,9 @@
 using std::cout;
 using std::endl;
 
-void TextView::render(State &s) {
+void TextView::render(Model *m) {
   int count{};
-  for (auto &x : s) {
+  for (auto &x : m->state()) {
     if (x.second)
       cout << x.second->draw();
     else
@@ -18,4 +18,10 @@ void TextView::render(State &s) {
       count = 0;
     }
   }
+  cout << "Race: " << Utility::typeToString(m->getPlayer()->type())
+       << " Gold: " << m->getScore() << endl;
+  cout << "HP: " << m->getPlayer()->getHp() << endl;
+    cout << "Atk: " << m->getPlayer()->getAtk() << endl;
+  cout << "Def: " << m->getPlayer()->getDef() << endl;
+  cout << "Action: " << m->getTurnDesc() << endl;
 }

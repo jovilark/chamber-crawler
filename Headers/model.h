@@ -6,8 +6,8 @@
 #include "entity.h"
 #include "tile.h"
 #include "utility.h"
-#include "view.h"
 #include <iostream>
+#include <memory>
 
 using std::make_unique;
 using std::unique_ptr;
@@ -27,8 +27,8 @@ public:
   Loc LocInChamber(int chamber_num);
 
   template <typename EntityType>
-  Entity *generateCharacter(Loc l = NEEDS_RANDOM,
-                            int chamber_num = NEEDS_RANDOM_CHAMBER) {
+  Entity *generateEntity(Loc l = NEEDS_RANDOM,
+                         int chamber_num = NEEDS_RANDOM_CHAMBER) {
     m_entities.push_back(make_unique<EntityType>());
     Entity *character = m_entities.back().get();
     if (chamber_num == NEEDS_RANDOM_CHAMBER) {
@@ -46,19 +46,19 @@ public:
     return character;
   }
 
-  template <typename EntityType> 
-  Entity *generatePlayer() {
+  template <typename EntityType> Entity *generatePlayer() {
     // Temporarily assign a specified location until random works.
     int chamber_num = rand() % m_chambers.size();
     m_playerLoc = LocInChamber(chamber_num);
-    m_player = generateCharacter<EntityType>(m_playerLoc, chamber_num);
+    m_player = generateEntity<EntityType>(m_playerLoc, chamber_num);
     return m_player;
   }
 
-  void generateEnemies();
+  void generateEnemies(int n);
+  void generatePotions(int n);
+  void generateTreasure(int n);
 
-  template <typename TileType> 
-  Tile *generateTile() {
+  template <typename TileType> Tile *generateTile() {
     m_tiles.push_back(make_unique<TileType>());
     Tile *tile = m_tiles.back().get();
     m_state.push_back(make_pair(tile, nullptr));
@@ -74,9 +74,11 @@ public:
   void restart();
   void quit();
   State &state() { return m_state; }
-  void render();
   int indiceFromLoc(Utility::Loc l);
-
+  Entity *getPlayer() { return m_player; }
+  int getScore() { return m_score; }
+  string getTurnDesc() { return turn_desc; }
+  void resetTurnDesc() { turn_desc = ""; }
 private:
   bool move(Node &origin, Node &target);
   bool attack(Node &attacker, Node &target);
@@ -89,7 +91,7 @@ private:
   Utility::Loc m_playerLoc;
   bool m_move;
   State m_state;
-  unique_ptr<View> m_view;
+  string turn_desc;
   vector<unique_ptr<Entity>> m_entities;
   vector<unique_ptr<Tile>> m_tiles;
   vector<Chamber> m_chambers;

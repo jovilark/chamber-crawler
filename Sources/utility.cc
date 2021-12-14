@@ -97,8 +97,28 @@ string Utility::typeToString(Type t) {
   switch (t) {
   case Type::Shade:
     return "Shade";
+  case Type::Drow:
+    return "Drow";
+  case Type::Vampire:
+    return "Vampire";
+  case Type::Troll:
+    return "Troll";
+  case Type::Goblin:
+    return "Goblin";
+  case Type::Human:
+    return "Human";
   case Type::Dwarf:
     return "Dwarf";
+  case Type::Elf:
+    return "Elf";
+  case Type::Orcs:
+    return "Orcs";
+  case Type::Merchant:
+    return "Merchant";
+  case Type::Halfling:
+    return "Halfling";
+  case Type::Dragon:
+    return "Dragon";
   default:
     return "None";
   }
