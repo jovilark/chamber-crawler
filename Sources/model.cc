@@ -272,8 +272,8 @@ void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
   if (attacker == m_player)
     turn_desc += "PC";
   else
-    turn_desc += Utility::typeToString(attacker->type()) + " deals " +
-                 std::to_string(damage) + " damage to ";
+    turn_desc += Utility::typeToString(attacker->type());
+  turn_desc += " deals " + std::to_string(damage) + " damage to ";
   if (defender == m_player)
     turn_desc += "PC. ";
   else
