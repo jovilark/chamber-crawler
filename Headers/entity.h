@@ -26,7 +26,6 @@ public:
   virtual void setValue(int value) { m_value = value; }
   virtual void setChamberNum(int chamber_num) { m_chamber = chamber_num; }
   virtual void setType(Utility::Type type) { m_type = type; }
-
   virtual Utility::Direction move();
   virtual int defend(float atk);
   virtual int attack(Entity *defender);

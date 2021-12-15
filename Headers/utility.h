@@ -48,17 +48,18 @@ enum class Type {
   Orcs = 8,
   Merchant = 9,
   Halfling = 10,
-  SmallTreasure = 11,
-  NormalTreasure = 12,
-  MerchantTreasure = 13,
-  DragonTreasure = 14,
-  AtkUpPotion = 15,
-  AtkDownPotion = 16,
-  DefUpPotion = 17,
-  DefDownPotion = 18,
-  HpUpPotion = 19,
-  HpDownPotion = 20,
-  None = 21
+  Dragon = 11,
+  SmallTreasure = 12,
+  NormalTreasure = 13,
+  MerchantTreasure = 14,
+  DragonTreasure = 15,
+  AtkUpPotion = 16,
+  AtkDownPotion = 17,
+  DefUpPotion = 18,
+  DefDownPotion = 19,
+  HpUpPotion = 20,
+  HpDownPotion = 21,
+  None = 22
 };
 
 enum class Terrain {

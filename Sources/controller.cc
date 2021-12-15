@@ -18,7 +18,8 @@ using std::ifstream;
 using std::make_unique;
 using std::stringstream;
 
-Controller::Controller() : m_model{make_unique<Model>()} {}
+Controller::Controller()
+    : m_model{make_unique<Model>()}, text_view{make_unique<TextView>()} {}
 
 void Controller::parseLayout(string file) {
   ifstream inFile(file);
@@ -72,8 +73,11 @@ void Controller::parseNewGame(char c) {
     m_model->generatePlayer<Shade>();
     break;
   }
-  m_model->generateEnemies();
-  m_model->render();
+  m_model->generateTreasure(10);
+  m_model->generatePotions(10);
+  m_model->generateEnemies(20);
+  text_view->render(m_model.get());
+  m_model->resetTurnDesc();
 }
 
 void Controller::parseTurn(string cmd) {
@@ -108,5 +112,6 @@ void Controller::parseTurn(string cmd) {
   }
   m_model->enemyTurn();
   // m_model->enemyAttack();
-  m_model->render();
+  text_view->render(m_model.get());
+  m_model->resetTurnDesc();
 }
