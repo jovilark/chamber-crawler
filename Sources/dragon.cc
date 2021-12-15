@@ -8,3 +8,5 @@ Dragon::Dragon() {
 }
 
 char Dragon::draw() { return 'D'; }
+
+Utility::Direction Dragon::move() { return Utility::Direction::None; }

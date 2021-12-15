@@ -10,6 +10,7 @@
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
 #include "../Headers/vwall.h"
+#include "../Headers/staircase.h"
 #include <iostream>
 #include <sstream>
 
@@ -73,18 +74,33 @@ void Controller::parseNewGame(char c) {
     m_model->generatePlayer<Shade>();
     break;
   }
+  parseNewFloor();
+}
+
+void Controller::parseNewFloor() {
+  if(m_model->getFloor() != 0) {
+    m_model->clearEntities();
+    m_model->getPlayer()->setChamberNum(rand() % 5);
+    Utility::Loc l = m_model->LocInChamber(m_model->getPlayer()->getChamberNum());
+    m_model->state()[m_model->indiceFromLoc(l)].second = m_model->getPlayer();
+  }
+  int stair_chamber = rand() % 5;
+  while(stair_chamber != m_model->getPlayer()->getChamberNum())
+  {
+    stair_chamber = rand() % 5;
+  }
+  m_model->generateEntity<Staircase>(NEEDS_RANDOM, stair_chamber);
   m_model->generateTreasure(10);
   m_model->generatePotions(10);
   m_model->generateEnemies(20);
   text_view->render(m_model.get());
   m_model->resetTurnDesc();
-}
+} 
 
-void Controller::parseTurn(string cmd) {
+bool Controller::parseTurn(string cmd) {
   stringstream ss{cmd};
   string arg;
   ss >> arg;
-
   // If arg is not one letter, interpret it as a direction.
   if (arg.size() > 1) {
     m_model->playerMove(Utility::strToDirection(arg));
@@ -97,7 +113,9 @@ void Controller::parseTurn(string cmd) {
       m_model->restart();
       break;
     case 'q':
-      m_model->quit();
+      std::cout << "DEFEAT!" << std::endl;
+      return false;
+      //m_model->quit();
       break;
     case 'u':
       ss >> arg;
@@ -110,8 +128,19 @@ void Controller::parseTurn(string cmd) {
       break;
     }
   }
-  m_model->enemyTurn();
-  // m_model->enemyAttack();
-  text_view->render(m_model.get());
+  if(m_model->toNextFloor()) {
+    m_model->nextFloor();
+    if(m_model->getFloor() == 6) {
+      //win message;
+    }
+    std::cout << m_model->getFloor() << std::endl;
+    parseNewFloor();
+    m_model->setNextFloor(false);
+  } else {
+    m_model->enemyTurn();
+    text_view->render(m_model.get());
+  }
   m_model->resetTurnDesc();
+
+  return true;
 }

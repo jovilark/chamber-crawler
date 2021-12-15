@@ -10,7 +10,7 @@ public:
   virtual ~Character() = 0;
 
   bool invulnerable();
-  Utility::Direction move();
+  virtual Utility::Direction move();
 
 private:
 };

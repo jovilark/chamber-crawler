@@ -219,7 +219,9 @@ bool Model::interact(Node &target) {
 
 void Model::restart() {}
 
-void Model::quit() {}
+// void Model::quit() {
+//   cout << "DEFEAT!" << endl;  // exit(0);
+// }
 
 int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
@@ -281,6 +283,25 @@ void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
                  std::to_string(defender->getHp()) + " HP). ";
 }
 
+void Model::clearEntities()
+{
+  m_entities.erase(m_entities.begin()+1, m_entities.end());
+
+/*
+  std::unique_ptr<Entity> e = std::move(m_entities.front());
+  m_entities.clear();
+  m_entities.push_back(std::move(e));
+  m_player = m_entities.front().get();
+*/
+
+  for (auto &i : m_state) i.second = nullptr;
+
+  // for(auto i = m_state.begin(); i != m_state.end(); ++i)
+  // {
+  //   (*i).second = nullptr;
+  // }
+}
+
 bool Model::parseEffect(Utility::Effect e) {
   switch (e) {
   case Utility::Effect::SmallTreasure:
@@ -298,21 +319,50 @@ bool Model::parseEffect(Utility::Effect e) {
   case Utility::Effect::AtkUp:
     m_player->setAtkBonus(m_player->getAtkBonus() + 5);
     break;
+
   case Utility::Effect::AtkDown:
-    m_player->setAtkBonus(m_player->getAtkBonus() - 5);
+    if (m_player->getCurrentAtk() - 5 < 0){
+      m_player->setAtkBonus(-1 * m_player->getAtk());
+    }
+    else {
+      m_player->setAtkBonus(m_player->getAtkBonus() - 5);
+    }
     break;
+
   case Utility::Effect::DefUp:
     m_player->setDefBonus(m_player->getDefBonus() + 5);
     break;
+    
   case Utility::Effect::DefDown:
-    m_player->setDefBonus(m_player->getDefBonus() - 5);
+    if (m_player->getCurrentDef() - 5 < 0){
+      m_player->setDefBonus(-1 * m_player->getDef());
+    }
+    else {
+      m_player->setDefBonus(m_player->getDefBonus() - 5);
+    }
     break;
+
   case Utility::Effect::HpUp:
-    m_player->setHp(m_player->getHp() + 10);
+    if (m_player->getHp() + 10 <= m_player->getMaxHp()){
+      m_player->setHp(m_player->getHp() + 10);
+    }
+    else {
+      m_player->setHp(m_player->getMaxHp());
+    }
     break;
+
   case Utility::Effect::HpDown:
-    m_player->setHp(m_player->getHp() - 10);
+    if (m_player->getHp() - 10 < 0){
+      m_player->setHp(0);
+    }
+    else {
+      m_player->setHp(m_player->getHp() - 10);
+    }
     break;
+
+  case Utility::Effect::Staircase:
+    setNextFloor(true);
+  break;
   default:
     return false;
   }

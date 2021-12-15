@@ -21,7 +21,7 @@ void TextView::render(Model *m) {
   cout << "Race: " << Utility::typeToString(m->getPlayer()->type())
        << " Gold: " << m->getScore() << endl;
   cout << "HP: " << m->getPlayer()->getHp() << endl;
-    cout << "Atk: " << m->getPlayer()->getAtk() << endl;
-  cout << "Def: " << m->getPlayer()->getDef() << endl;
+    cout << "Atk: " << m->getPlayer()->getCurrentAtk() << endl;
+  cout << "Def: " << m->getPlayer()->getCurrentDef() << endl;
   cout << "Action: " << m->getTurnDesc() << endl;
 }

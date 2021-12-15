@@ -17,7 +17,8 @@ public:
   ~Controller() = default;
   void parseLayout(string file);
   void parseNewGame(char c);
-  void parseTurn(string cmd);
+  bool parseTurn(string cmd);
+  void parseNewFloor();
 
 private:
   unique_ptr<Model> m_model;

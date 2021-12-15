@@ -17,7 +17,7 @@ ${EXEC}: ${OBJECTS}
 .PHONY: clean echoes
 
 clean:
-	rm ${OBJECTS} ${DEPENDS} ${EXEC}
+	rm ${OBJECTS} ${DEPENDS} 
 
 echoes:
 	@echo "INC files: $(INCLUDES)"  

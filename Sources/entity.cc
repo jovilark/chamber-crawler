@@ -12,13 +12,13 @@ Utility::Direction Entity::move() { return Utility::Direction::None; }
 int Entity::defend(float atk) {
   if (invulnerable())
     return getHp();
-  float def = getDef() + getDefBonus();
+  float def = getCurrentDef();
   int damage = ceil((100.0f / (100.0f + def)) * atk);
   setHp(getHp() - damage);
   return getHp();
 }
 
-int Entity::attack(Entity *defender) { return defender->defend(getAtk() + getAtkBonus()); }
+int Entity::attack(Entity *defender) { return defender->defend(getCurrentAtk()); }
 
 Utility::Effect Entity::interacted() { return Utility::Effect::None; }
 

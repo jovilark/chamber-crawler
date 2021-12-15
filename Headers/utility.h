@@ -33,7 +33,8 @@ enum class Effect {
   DefUp = 7,
   DefDown = 8,
   HpUp = 9,
-  HpDown = 10
+  HpDown = 10,
+  Staircase = 11
 };
 
 enum class Type {

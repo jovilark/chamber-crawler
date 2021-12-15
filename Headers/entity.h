@@ -9,16 +9,20 @@ public:
   virtual ~Entity() = 0;
 
   virtual int getHp() { return m_hp; }
+  virtual int getMaxHp() { return max_hp; }
   virtual int getAtk() { return m_atk; }
   virtual int getDef() { return m_def; }
   virtual int getAtkBonus() { return m_atkBonus; }
+  virtual int getCurrentAtk() { return m_atk + m_atkBonus; }
   virtual int getDefBonus() { return m_defBonus; }
+  virtual int getCurrentDef() { return m_def + m_defBonus; }
   int getChamberNum() { return m_chamber; }
 
   virtual int value() { return m_value; }
   virtual Utility::Type type() { return m_type; }
   virtual bool invulnerable() { return true; }
   virtual void setHp(int hp) { m_hp = hp; }
+  virtual void setMaxHp(int hp) { max_hp = hp; }
   virtual void setAtk(int atk) { m_atk = atk; }
   virtual void setDef(int def) { m_def = def; }
   virtual void setAtkBonus(int bonus) { m_atkBonus = bonus; }
@@ -35,7 +39,7 @@ public:
   virtual char draw();
 
 private:
-  int m_hp, m_atk, m_def, m_atkBonus, m_defBonus, m_value, m_chamber;
+  int m_hp, m_atk, m_def, m_atkBonus, m_defBonus, m_value, m_chamber, max_hp;
   Utility::Type m_type;
 };
 

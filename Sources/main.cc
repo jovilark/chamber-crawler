@@ -21,6 +21,8 @@ int main(int argc, char *argv[]) {
   controller.parseNewGame(cmd[0]);
 
   while (getline(cin, cmd)) {
-    controller.parseTurn(cmd);
+    if (controller.parseTurn(cmd) == false){
+      break;
+    }
   }
 }
