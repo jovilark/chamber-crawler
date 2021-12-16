@@ -14,6 +14,9 @@
 #include <iostream>
 #include <sstream>
 
+using std::cin;
+using std::cout;
+using std::endl;
 using std::getline;
 using std::ifstream;
 using std::make_unique;
@@ -52,9 +55,13 @@ void Controller::parseLayout(string file) {
   }
 }
 
-void Controller::parseNewGame(char c) {
+void Controller::parseNewGame() {
+  m_model->resetTurnDesc();
+  string cmd;
+  cout << "Enter your Type:" << endl;
+  getline(cin, cmd);
   m_model->generateChambers();
-  switch (c) {
+  switch (cmd[0]) {
   case 's':
     m_model->generatePlayer<Shade>();
     break;
@@ -74,28 +81,14 @@ void Controller::parseNewGame(char c) {
     m_model->generatePlayer<Shade>();
     break;
   }
-  parseNewFloor();
-}
-
-void Controller::parseNewFloor() {
-  if(m_model->getFloor() != 0) {
-    m_model->clearEntities();
-    m_model->getPlayer()->setChamberNum(rand() % 5);
-    Utility::Loc l = m_model->LocInChamber(m_model->getPlayer()->getChamberNum());
-    m_model->state()[m_model->indiceFromLoc(l)].second = m_model->getPlayer();
-  }
-  int stair_chamber = rand() % 5;
-  while(stair_chamber != m_model->getPlayer()->getChamberNum())
-  {
-    stair_chamber = rand() % 5;
-  }
-  m_model->generateEntity<Staircase>(NEEDS_RANDOM, stair_chamber);
-  m_model->generateTreasure(10);
-  m_model->generatePotions(10);
-  m_model->generateEnemies(20);
+  m_model->generateLevel();
   text_view->render(m_model.get());
-  m_model->resetTurnDesc();
-} 
+  while (getline(cin, cmd)) {
+    if (!parseTurn(cmd)){
+      break;
+    }
+  }
+}
 
 bool Controller::parseTurn(string cmd) {
   stringstream ss{cmd};
@@ -107,15 +100,22 @@ bool Controller::parseTurn(string cmd) {
   } else {
     switch (arg.front()) {
     case 'f':
-      m_model->setEnemyMovement(false);
+      if (m_model->getEnemyMovement()){
+        m_model->setEnemyMovement(false);
+      }
+      else {
+        m_model->setEnemyMovement(true);
+      }
       break;
     case 'r':
-      m_model->restart();
+      text_view->displayFinalScore(m_model->getPlayer()->getScore());
+      return false;
       break;
     case 'q':
-      std::cout << "DEFEAT!" << std::endl;
-      return false;
-      //m_model->quit();
+        text_view->displayScreen("gameoverscreen.txt");
+        text_view->displayFinalScore(m_model->getPlayer()->getScore());
+        setQuit(true);
+        return false;
       break;
     case 'u':
       ss >> arg;
@@ -131,16 +131,26 @@ bool Controller::parseTurn(string cmd) {
   if(m_model->toNextFloor()) {
     m_model->nextFloor();
     if(m_model->getFloor() == 6) {
-      //win message;
+      text_view->displayScreen("winscreen.txt");
+      text_view->displayFinalScore(m_model->getPlayer()->getScore());
+      return false;
     }
-    std::cout << m_model->getFloor() << std::endl;
-    parseNewFloor();
+    m_model->generateLevel();
+    text_view->render(m_model.get());
     m_model->setNextFloor(false);
   } else {
-    m_model->enemyTurn();
+    m_model->enemyTurn(m_model->getEnemyMovement());
     text_view->render(m_model.get());
   }
+  if(m_model->getPlayer()->getHp() < 0) {
+    text_view->displayScreen("gameoverscreen.txt");
+    text_view->displayFinalScore(m_model->getPlayer()->getScore());
+    return false;
+  }
   m_model->resetTurnDesc();
-
   return true;
+}
+
+void Controller::restartGame() {
+  text_view->displayScreen("restartscreen.txt");
 }

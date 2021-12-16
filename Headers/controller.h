@@ -16,13 +16,15 @@ public:
   Controller();
   ~Controller() = default;
   void parseLayout(string file);
-  void parseNewGame(char c);
+  void parseNewGame();
   bool parseTurn(string cmd);
-  void parseNewFloor();
-
+  void restartGame();
+  void setQuit(bool b) { m_quit = b; }
+  bool quit() { return m_quit; };
 private:
   unique_ptr<Model> m_model;
   unique_ptr<TextView> text_view;
+  bool m_quit;
 };
 
 #endif // _CONTROLLER_H_

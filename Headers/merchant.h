@@ -8,6 +8,7 @@ public:
   Merchant();
   ~Merchant() = default;
   char draw();
+  int defend(float atk);
 
 private:
   static const int DEFAULT_HP = 30;

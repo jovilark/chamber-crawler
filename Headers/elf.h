@@ -8,6 +8,7 @@ public:
   Elf();
   ~Elf() = default;
   char draw();
+  int attack(Entity *defender);
 
 private:
   static const int DEFAULT_HP = 140;

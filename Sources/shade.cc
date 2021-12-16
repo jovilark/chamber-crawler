@@ -9,3 +9,5 @@ Shade::Shade() {
 }
 
 char Shade::draw() { return '@'; }
+
+int Shade::getScore() { return getGold() * 1.5; }

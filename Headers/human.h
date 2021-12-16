@@ -8,6 +8,7 @@ public:
   Human();
   ~Human() = default;
   char draw();
+  Utility::Effect died();
 
 private:
   static const int DEFAULT_HP = 140;

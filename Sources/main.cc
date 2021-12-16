@@ -8,21 +8,29 @@ using std::endl;
 using std::getline;
 using std::string;
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   srand((unsigned int)time(NULL));
-  Controller controller{};
-  if (argc > 1)
-    controller.parseLayout(string(argv[1]));
+  while (true)
+  {
+    auto controller = std::make_unique<Controller>();
+    if (argc > 1)
+      controller->parseLayout(string(argv[1]));
+    else
+      controller->parseLayout("defaultlayout.txt");
 
-  string cmd;
-  cout << "Enter your Type:" << endl;
-
-  getline(cin, cmd);
-  controller.parseNewGame(cmd[0]);
-
-  while (getline(cin, cmd)) {
-    if (controller.parseTurn(cmd) == false){
+    controller->parseNewGame();
+    if (controller->quit())
       break;
+    controller->restartGame();
+    char c;
+    std::cin >> c;
+    if (c == 'Y' || c == 'y')
+    {
+      controller.reset();
+      controller = std::make_unique<Controller>();
     }
+    else
+      break;
   }
 }

@@ -1,5 +1,7 @@
 #include "../Headers/item.h"
 
-Item::Item() {}
+Item::Item() {
+    setHostile(false);
+}
 
 Item::~Item() {}

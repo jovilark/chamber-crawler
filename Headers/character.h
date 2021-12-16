@@ -11,6 +11,7 @@ public:
 
   bool invulnerable();
   virtual Utility::Direction move();
+  virtual Utility::Effect died();
 
 private:
 };

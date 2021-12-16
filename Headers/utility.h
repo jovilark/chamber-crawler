@@ -46,7 +46,7 @@ enum class Type {
   Human = 5,
   Dwarf = 6,
   Elf = 7,
-  Orcs = 8,
+  Orc = 8,
   Merchant = 9,
   Halfling = 10,
   Dragon = 11,
@@ -60,7 +60,8 @@ enum class Type {
   DefDownPotion = 19,
   HpUpPotion = 20,
   HpDownPotion = 21,
-  None = 22
+  Staircase = 22,
+  None = 23
 };
 
 enum class Terrain {
@@ -77,6 +78,13 @@ Type charToType(char c);
 Terrain charToTerrain(char c);
 Loc addDirectionToLoc(Direction d, Loc l);
 string typeToString(Type t);
+string dirToString(Direction d);
+bool isPlayableCharacter(Type t);
+bool isCharacter(Type t);
+bool isEnemy(Type t);
+bool isPotion(Type t);
+bool isTreasure(Type t);
+bool isItem(Type t);
 }; // namespace Utility
 
 #endif // _UTILITY_H_

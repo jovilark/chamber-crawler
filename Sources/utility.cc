@@ -111,15 +111,72 @@ string Utility::typeToString(Type t) {
     return "Dwarf";
   case Type::Elf:
     return "Elf";
-  case Type::Orcs:
-    return "Orcs";
+  case Type::Orc:
+    return "Orc";
   case Type::Merchant:
     return "Merchant";
   case Type::Halfling:
     return "Halfling";
   case Type::Dragon:
     return "Dragon";
+  case Type::SmallTreasure:
+    return "Small Treasure";
+  case Type::NormalTreasure:
+    return "Normal Treasure";
+  case Type::MerchantTreasure:
+    return "Merchant Treasure";
+  case Type::DragonTreasure:
+    return "Dragon Treasure";
+  case Type::AtkUpPotion:
+    return "BA";
+  case Type::AtkDownPotion:
+    return "WA";
+  case Type::DefUpPotion:
+    return "BD";
+  case Type::DefDownPotion:
+    return "WD";
+  case Type::HpUpPotion:
+    return "RH";
+  case Type::HpDownPotion:
+    return "PH";
+  case Type::Staircase:
+    return "Staircase";
   default:
     return "None";
   }
 }
+
+string Utility::dirToString(Direction d) {
+  switch (d) {
+  case Direction::NW:
+    return "Northwest";
+  case Direction::N:
+    return "North";
+  case Direction::NE:
+    return "Northeast";
+  case Direction::E:
+    return "East";
+  case Direction::SE:
+    return "Southeast";
+  case Direction::S:
+    return "South";
+  case Direction::SW:
+    return "Southwest";
+  case Direction::W:
+    return "West";
+  default:
+    return "None";
+  }
+}
+
+bool Utility::isPlayableCharacter(Type t) { return (int)t >= 0 && (int)t <= 4; }
+
+bool Utility::isCharacter(Type t) { return (int)t >= 0 && (int)t <= 11; }
+
+bool Utility::isEnemy(Type t) { return (int)t >= 5 && (int)t <= 11; }
+
+bool Utility::isPotion(Type t) { return (int)t >= 16 && (int)t <= 21; }
+
+bool Utility::isTreasure(Type t) { return (int)t >= 12 && (int)t <= 15; }
+
+bool Utility::isItem(Type t) { return (int)t >= 12 && (int)t <= 22; }

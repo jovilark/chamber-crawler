@@ -7,7 +7,7 @@ INCLUDES=$(wildcard ${INCLUDEDIR}/*.h)
 SOURCES=$(wildcard ${SOURCEDIR}/*.cc)
 OBJECTS=${SOURCES:.cc=.o}
 DEPENDS=${OBJECTS:.o=.d}
-EXEC=CC3K
+EXEC=cc3k
 
 ${EXEC}: ${OBJECTS}
 	${CXX} ${OBJECTS} -o ${EXEC}

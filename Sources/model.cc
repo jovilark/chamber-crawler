@@ -20,7 +20,7 @@
 #include "../Headers/merchant.h"
 #include "../Headers/none.h"
 #include "../Headers/normaltreasure.h"
-#include "../Headers/orcs.h"
+#include "../Headers/orc.h"
 #include "../Headers/passage.h"
 #include "../Headers/shade.h"
 #include "../Headers/smalltreasure.h"
@@ -28,17 +28,15 @@
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
 #include "../Headers/vwall.h"
-#include <iostream>
-#include <unordered_map>
+#include "../Headers/staircase.h"
 
 using std::cout;
 using std::endl;
 using std::make_unique;
-using std::unordered_map;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
-      turn_desc{""}, m_entities{}, m_tiles{}, m_score{0} {}
+      turn_desc{""}, m_entities{}, m_tiles{}, m_floor{0} {}
 
 void Model::generateChambers() {
   Chamber chamber1 = vector<Loc>{Loc(2, 2), Loc(29, 2), Loc(29, 7), Loc(2, 7)};
@@ -83,7 +81,7 @@ void Model::generateEnemies(int n) {
     } else if (rand_num >= 12 && rand_num < 14) {
       generateEntity<Elf>();
     } else if (rand_num >= 14 && rand_num < 16) {
-      generateEntity<Orcs>();
+      generateEntity<Orc>();
     } else {
       generateEntity<Merchant>();
     }
@@ -96,10 +94,15 @@ void Model::generateTreasure(int n) {
     if (rand_num < 5) {
       generateEntity<NormalTreasure>();
     } else if (rand_num >= 5 && rand_num < 6) {
-      generateEntity<DragonTreasure>();
-      generateEntity<Dragon>(NEEDS_RANDOM, m_entities.back()->getChamberNum());
-    } else {
       generateEntity<SmallTreasure>();
+    } else {
+      Loc dragon_treasure = generateEntity<DragonTreasure>();
+      Utility::Direction dir = (Utility::Direction)(rand() % 8);
+      while(state()[indiceFromLoc(Utility::addDirectionToLoc(dir, dragon_treasure))].second)
+      {
+        dir = (Utility::Direction)(rand() % 8);
+      }
+      generateEntity<Dragon>(Utility::addDirectionToLoc(dir, dragon_treasure), m_entities.back()->getChamberNum());
     }
   }
 }
@@ -137,19 +140,19 @@ bool Model::playerMove(Utility::Direction d) {
   bool result = move(origin, target);
   if (result) {
     m_playerLoc = l;
+    printMove(d);
   }
   return result;
 }
 
-void Model::enemyTurn() {
+void Model::enemyTurn(bool canMove) {
   unordered_map<Entity *, bool> moved;
   for (int dX = -1; dX < 2; ++dX) {
     for (int dY = -1; dY < 2; ++dY) {
       if (dX == 0 && dY == 0)
         continue;
 
-      Utility::Loc l =
-          make_pair(m_playerLoc.first + dX, m_playerLoc.second + dY);
+      Utility::Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
       auto &attacker = m_state[indiceFromLoc(l)];
       if (!attacker.second)
         continue;
@@ -158,6 +161,8 @@ void Model::enemyTurn() {
       attack(attacker, target);
     }
   }
+
+  if (!canMove) return;
 
   for (int i = 0; i < m_state.size(); ++i) {
     auto &origin = m_state[i];
@@ -211,17 +216,12 @@ bool Model::interact(Node &target) {
     return false;
   bool result = parseEffect(target.second->interacted());
   if (result) {
+    m_potions[target.second->getType()] = true;
     removeEntity(target.second);
     target.second = nullptr;
   }
   return result;
 }
-
-void Model::restart() {}
-
-// void Model::quit() {
-//   cout << "DEFEAT!" << endl;  // exit(0);
-// }
 
 int Model::indiceFromLoc(Utility::Loc l) {
   return l.first + l.second * BOARD_WIDTH;
@@ -249,13 +249,17 @@ bool Model::attack(Node &attacker, Node &target) {
 
   int oldHp = target.second->getHp();
   int hp = attacker.second->attack(target.second);
-
-  printAttack(attacker.second, target.second, oldHp - hp);
-
+  if (Utility::isCharacter(attacker.second->getType())) {
+    printAttack(attacker.second, target.second, oldHp - hp);
+  }
   bool died = hp <= 0;
   if (died) {
-    removeEntity(target.second);
-    target.second = nullptr;
+    if (target.second != m_player)
+    {
+      parseEffect(target.second->died());
+      removeEntity(target.second);
+      target.second = nullptr;
+    }
   }
   return died;
 }
@@ -274,97 +278,124 @@ void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
   if (attacker == m_player)
     turn_desc += "PC";
   else
-    turn_desc += Utility::typeToString(attacker->type());
+    turn_desc += Utility::typeToString(attacker->getType());
   turn_desc += " deals " + std::to_string(damage) + " damage to ";
   if (defender == m_player)
     turn_desc += "PC. ";
   else
-    turn_desc += Utility::typeToString(defender->type()) + " (" +
+    turn_desc += Utility::typeToString(defender->getType()) + " (" +
                  std::to_string(defender->getHp()) + " HP). ";
 }
 
-void Model::clearEntities()
+void Model::printMove(Utility::Direction d)
 {
-  m_entities.erase(m_entities.begin()+1, m_entities.end());
+  turn_desc += "PC moves " + Utility::dirToString(d);
 
-/*
-  std::unique_ptr<Entity> e = std::move(m_entities.front());
-  m_entities.clear();
-  m_entities.push_back(std::move(e));
-  m_player = m_entities.front().get();
-*/
+  vector<Utility::Type> nearby{scout()};
 
-  for (auto &i : m_state) i.second = nullptr;
+  for (int i = 0; i < nearby.size(); ++i)
+  {
+    turn_desc += " ";
+    if (Utility::isPotion(nearby[i]) && !m_potions[nearby[i]]) turn_desc += "Potion";
+    else turn_desc += Utility::typeToString(nearby[i]);
+    if (i != nearby.size()-1) turn_desc += ",";
+    else turn_desc += ".";
+  }
+}
 
-  // for(auto i = m_state.begin(); i != m_state.end(); ++i)
-  // {
-  //   (*i).second = nullptr;
-  // }
+vector<Utility::Type> Model::scout()
+{
+  vector<Utility::Type> result{};
+  for (int dX = -1; dX < 2; ++dX)
+  {
+    for (int dY = -1; dY < 2; ++dY)
+    {
+      if (dX == 0 && dY == 0) continue;
+
+      Utility::Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
+      auto &target = m_state[indiceFromLoc(l)];
+
+      if (target.second)
+      {
+        Utility::Type t = target.second->getType();
+        if (Utility::isCharacter(t)) continue;
+        result.push_back(t);
+      }
+    }
+  }
+  return result;
+}
+
+void Model::resetEntities()
+{
+  if (m_floor != 0) {
+    m_entities.erase(m_entities.begin()+1, m_entities.end());
+    for (auto &i : m_state) i.second = nullptr;
+    m_player->setChamberNum(rand() % 5);
+    Utility::Loc l = LocInChamber(m_player->getChamberNum());
+    m_state[indiceFromLoc(l)].second = m_player;
+    m_playerLoc = l;
+    m_player->setAtkBonus(0);
+    m_player->setDefBonus(0);
+  }
+}
+
+int Model::getNonPlayerChamber()
+{
+  int chamber = rand() % 5;
+  while(chamber != m_player->getChamberNum())
+  {
+    chamber = rand() % 5;
+  }
+  return chamber;
 }
 
 bool Model::parseEffect(Utility::Effect e) {
   switch (e) {
   case Utility::Effect::SmallTreasure:
-    m_score += 1;
+    m_player->setGold(m_player->getGold() + 1);
     break;
   case Utility::Effect::NormalTreasure:
-    m_score += 2;
+    m_player->setGold(m_player->getGold() + 2);
     break;
   case Utility::Effect::MerchantTreasure:
-    m_score += 4;
+    m_player->setGold(m_player->getGold() + 4);
     break;
   case Utility::Effect::DragonTreasure:
-    m_score += 6;
+    m_player->setGold(m_player->getGold() + 6);
     break;
   case Utility::Effect::AtkUp:
     m_player->setAtkBonus(m_player->getAtkBonus() + 5);
     break;
-
   case Utility::Effect::AtkDown:
-    if (m_player->getCurrentAtk() - 5 < 0){
-      m_player->setAtkBonus(-1 * m_player->getAtk());
-    }
-    else {
-      m_player->setAtkBonus(m_player->getAtkBonus() - 5);
-    }
+    m_player->setAtkBonus(m_player->getAtkBonus() - 5);
     break;
-
   case Utility::Effect::DefUp:
     m_player->setDefBonus(m_player->getDefBonus() + 5);
     break;
-    
   case Utility::Effect::DefDown:
-    if (m_player->getCurrentDef() - 5 < 0){
-      m_player->setDefBonus(-1 * m_player->getDef());
-    }
-    else {
       m_player->setDefBonus(m_player->getDefBonus() - 5);
-    }
     break;
-
   case Utility::Effect::HpUp:
-    if (m_player->getHp() + 10 <= m_player->getMaxHp()){
       m_player->setHp(m_player->getHp() + 10);
-    }
-    else {
-      m_player->setHp(m_player->getMaxHp());
-    }
     break;
-
   case Utility::Effect::HpDown:
-    if (m_player->getHp() - 10 < 0){
-      m_player->setHp(0);
-    }
-    else {
       m_player->setHp(m_player->getHp() - 10);
-    }
     break;
-
   case Utility::Effect::Staircase:
     setNextFloor(true);
-  break;
+    break;
   default:
     return false;
   }
   return true;
+}
+
+void Model::generateLevel() {
+  resetEntities();
+  generateEntity<Staircase>(NEEDS_RANDOM, getNonPlayerChamber());
+  generateTreasure(10);
+  generatePotions(10);
+  generateEnemies(20);
+  resetTurnDesc();
 }

@@ -8,6 +8,7 @@
 #include "utility.h"
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 
 using std::make_unique;
 using std::unique_ptr;
@@ -15,6 +16,7 @@ using std::vector;
 using Node = pair<Tile *, Entity *>;
 using State = vector<Node>;
 using std::make_pair;
+using std::unordered_map;
 
 static const Utility::Loc NEEDS_RANDOM = make_pair(-1, -1);
 static const int NEEDS_RANDOM_CHAMBER = -1;
@@ -27,7 +29,7 @@ public:
   Loc LocInChamber(int chamber_num);
 
   template <typename EntityType>
-  Entity *generateEntity(Loc l = NEEDS_RANDOM,
+  Loc generateEntity(Loc l = NEEDS_RANDOM,
                          int chamber_num = NEEDS_RANDOM_CHAMBER) {
     m_entities.push_back(make_unique<EntityType>());
     Entity *character = m_entities.back().get();
@@ -43,14 +45,15 @@ public:
       l = LocInChamber(character->getChamberNum());
     }
     m_state[indiceFromLoc(l)].second = character;
-    return character;
+    return l;
   }
 
   template <typename EntityType> Entity *generatePlayer() {
     // Temporarily assign a specified location until random works.
     int chamber_num = rand() % m_chambers.size();
     m_playerLoc = LocInChamber(chamber_num);
-    m_player = generateEntity<EntityType>(m_playerLoc, chamber_num);
+    generateEntity<EntityType>(m_playerLoc, chamber_num);
+    m_player = m_entities.back().get();
     return m_player;
   }
 
@@ -67,23 +70,25 @@ public:
 
   void generateLayout(vector<Utility::Terrain> layout);
   bool playerMove(Utility::Direction d);
-  void enemyTurn();
+  void enemyTurn(bool move);
   bool playerUse(Utility::Direction d);
   bool playerAttack(Utility::Direction d);
   void setEnemyMovement(bool move) { m_move = move; }
-  void restart();
-  void quit();
+  bool getEnemyMovement() { return m_move; }
   State &state() { return m_state; }
   int indiceFromLoc(Utility::Loc l);
   Entity *getPlayer() { return m_player; }
-  int getScore() { return m_score; }
+  int getScore() { return m_player->getGold(); }
   string getTurnDesc() { return turn_desc; }
   void resetTurnDesc() { turn_desc = ""; }
   void setNextFloor (bool b) { to_next_floor = b; }
   bool toNextFloor() { return to_next_floor; }
   int getFloor() { return m_floor; }
   void nextFloor() { ++m_floor; }
-  void clearEntities();
+  void resetEntities();
+  void generateLevel();
+  int getNonPlayerChamber();
+  void playerDead();
 
 private:
   bool move(Node &origin, Node &target);
@@ -93,6 +98,8 @@ private:
   bool collect(Node &target);
   bool interact(Node &target);
   bool parseEffect(Utility::Effect e);
+  void printMove(Utility::Direction d);
+  vector<Utility::Type> scout();
   Entity *m_player;
   Utility::Loc m_playerLoc;
   bool m_move;
@@ -102,8 +109,8 @@ private:
   vector<unique_ptr<Entity>> m_entities;
   vector<unique_ptr<Tile>> m_tiles;
   vector<Chamber> m_chambers;
-  int m_score;
-  int m_floor=0;
+  int m_floor;
+  unordered_map<Utility::Type, bool> m_potions;
 };
 
 #endif // _MODEL_H_

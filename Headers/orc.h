@@ -1,13 +1,14 @@
-#ifndef _ORCS_H_
-#define _ORCS_H_
+#ifndef _ORC_H_
+#define _ORC_H_
 
 #include "character.h"
 
-class Orcs : public Character {
+class Orc : public Character {
 public:
-  Orcs();
-  ~Orcs() = default;
+  Orc();
+  ~Orc() = default;
   char draw();
+  int attack(Entity *defender);
 
 private:
   static const int DEFAULT_HP = 180;
@@ -15,4 +16,4 @@ private:
   static const int DEFAULT_DEF = 25;
 };
 
-#endif // _ORCS_H_
+#endif // _ORC_H_
