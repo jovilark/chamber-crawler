@@ -9,6 +9,7 @@ public:
   ~Dragon() = default;
   char draw();
   Utility::Direction move() override;
+
 private:
   static const int DEFAULT_HP = 150;
   static const int DEFAULT_ATK = 20;

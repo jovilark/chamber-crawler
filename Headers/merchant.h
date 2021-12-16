@@ -8,7 +8,7 @@ public:
   Merchant();
   ~Merchant() = default;
   char draw();
-  int defend(float atk);
+  Utility::Effect died();
 
 private:
   static const int DEFAULT_HP = 30;

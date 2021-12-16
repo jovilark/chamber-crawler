@@ -1,6 +1,6 @@
 #include "../Headers/textview.h"
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -20,9 +20,9 @@ void TextView::render(Model *m) {
     }
   }
   cout << "Race: " << Utility::typeToString(m->getPlayer()->getType())
-       << " Gold: " << m->getScore() << endl;
+       << " Gold: " << m->getPlayer()->getGold() << endl;
   cout << "HP: " << m->getPlayer()->getHp() << endl;
-    cout << "Atk: " << m->getPlayer()->getCurrentAtk() << endl;
+  cout << "Atk: " << m->getPlayer()->getCurrentAtk() << endl;
   cout << "Def: " << m->getPlayer()->getCurrentDef() << endl;
   cout << "Action: " << m->getTurnDesc() << endl;
 }

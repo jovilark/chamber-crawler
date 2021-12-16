@@ -24,11 +24,11 @@
 #include "../Headers/passage.h"
 #include "../Headers/shade.h"
 #include "../Headers/smalltreasure.h"
+#include "../Headers/staircase.h"
 #include "../Headers/textview.h"
 #include "../Headers/troll.h"
 #include "../Headers/vampire.h"
 #include "../Headers/vwall.h"
-#include "../Headers/staircase.h"
 
 using std::cout;
 using std::endl;
@@ -36,7 +36,8 @@ using std::make_unique;
 
 Model::Model()
     : m_player{nullptr}, m_playerLoc{make_pair(-1, -1)}, m_move{true},
-      turn_desc{""}, m_entities{}, m_tiles{}, m_floor{0} {}
+      turn_desc{""}, m_entities{}, m_tiles{}, m_floor{0},
+      m_merchantHostile{0}, m_potions{}, m_dragons{} {}
 
 void Model::generateChambers() {
   Chamber chamber1 = vector<Loc>{Loc(2, 2), Loc(29, 2), Loc(29, 7), Loc(2, 7)};
@@ -84,6 +85,7 @@ void Model::generateEnemies(int n) {
       generateEntity<Orc>();
     } else {
       generateEntity<Merchant>();
+      m_entities.back()->setHostile(m_merchantHostile);
     }
   }
 }
@@ -97,14 +99,26 @@ void Model::generateTreasure(int n) {
       generateEntity<SmallTreasure>();
     } else {
       Loc dragon_treasure = generateEntity<DragonTreasure>();
-      Utility::Direction dir = (Utility::Direction)(rand() % 8);
-      while(state()[indiceFromLoc(Utility::addDirectionToLoc(dir, dragon_treasure))].second)
-      {
-        dir = (Utility::Direction)(rand() % 8);
-      }
-      generateEntity<Dragon>(Utility::addDirectionToLoc(dir, dragon_treasure), m_entities.back()->getChamberNum());
+      generateDragon(dragon_treasure);
     }
   }
+}
+
+void Model::generateDragon(Loc dragon_treasure) {
+  Direction dir = (Direction)(rand() % 8);
+  Entity *horde = m_entities.back().get();
+
+  auto &target =
+      m_state[indiceFromLoc(addDirectionToLoc(dir, dragon_treasure))];
+
+  while (target.second || !target.first->permeable()) {
+    dir = (Direction)(rand() % 8);
+    target = m_state[indiceFromLoc(addDirectionToLoc(dir, dragon_treasure))];
+  }
+
+  m_dragons[horde] =
+      generateEntity<Dragon>(addDirectionToLoc(dir, dragon_treasure),
+                             m_entities.back()->getChamberNum());
 }
 
 void Model::generatePotions(int n) {
@@ -132,8 +146,8 @@ void Model::generatePotions(int n) {
   }
 }
 
-bool Model::playerMove(Utility::Direction d) {
-  Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
+bool Model::playerMove(Direction d) {
+  Loc l = addDirectionToLoc(d, m_playerLoc);
   auto &target = m_state[indiceFromLoc(l)];
   auto &origin = m_state[indiceFromLoc(m_playerLoc)];
 
@@ -142,8 +156,12 @@ bool Model::playerMove(Utility::Direction d) {
     m_playerLoc = l;
     printMove(d);
   }
+
+  finished();
   return result;
 }
+
+void Model::finished() { parseEffect(m_player->finished()); }
 
 void Model::enemyTurn(bool canMove) {
   unordered_map<Entity *, bool> moved;
@@ -152,28 +170,32 @@ void Model::enemyTurn(bool canMove) {
       if (dX == 0 && dY == 0)
         continue;
 
-      Utility::Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
+      Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
       auto &attacker = m_state[indiceFromLoc(l)];
       if (!attacker.second)
         continue;
       auto &target = m_state[indiceFromLoc(m_playerLoc)];
       moved[attacker.second] = true;
-      attack(attacker, target);
+      bool hit = rand() % 2;
+      if (hit) {
+        attack(attacker, target);
+      }
     }
   }
 
-  if (!canMove) return;
+  if (!canMove)
+    return;
 
-  for (int i = 0; i < m_state.size(); ++i) {
+  for (size_t i = 0; i < m_state.size(); ++i) {
     auto &origin = m_state[i];
     if (!origin.second || moved[origin.second] || origin.second == m_player)
       continue;
 
-    Utility::Direction d = origin.second->move();
+    Direction d = origin.second->move();
 
     int x = i % BOARD_WIDTH;
     int y = i / BOARD_WIDTH;
-    Utility::Loc l = make_pair(x, y);
+    Loc l = make_pair(x, y);
     l = addDirectionToLoc(d, l);
 
     auto &target = m_state[indiceFromLoc(l)];
@@ -183,20 +205,22 @@ void Model::enemyTurn(bool canMove) {
   }
 }
 
-bool Model::playerUse(Utility::Direction d) {
-  Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
+bool Model::playerUse(Direction d) {
+  Loc l = addDirectionToLoc(d, m_playerLoc);
   auto &target = m_state[indiceFromLoc(l)];
 
+  finished();
   return interact(target);
 }
 
 // Returns true if an enemy was killed, false otherwise.
 // Attempts to attack an enemy in the direction.
-bool Model::playerAttack(Utility::Direction d) {
-  Utility::Loc l = Utility::addDirectionToLoc(d, m_playerLoc);
+bool Model::playerAttack(Direction d) {
+  Loc l = addDirectionToLoc(d, m_playerLoc);
   auto &attacker = m_state[indiceFromLoc(m_playerLoc)];
   auto &target = m_state[indiceFromLoc(l)];
 
+  finished();
   return attack(attacker, target);
 }
 
@@ -223,9 +247,7 @@ bool Model::interact(Node &target) {
   return result;
 }
 
-int Model::indiceFromLoc(Utility::Loc l) {
-  return l.first + l.second * BOARD_WIDTH;
-}
+int Model::indiceFromLoc(Loc l) { return l.first + l.second * BOARD_WIDTH; }
 
 bool Model::move(Node &origin, Node &target) {
   if (!target.first->permeable())
@@ -246,26 +268,35 @@ bool Model::attack(Node &attacker, Node &target) {
     return false;
   if (!target.second)
     return false;
-
+  if (attacker.second->getType() == Type::DragonTreasure) {
+    return attack(m_state[indiceFromLoc(m_dragons[attacker.second])], target);
+  }
+  if (!attacker.second->getHostile())
+    return false;
+  if (target.second->getType() == Type::Merchant)
+    m_merchantHostile = true;
   int oldHp = target.second->getHp();
   int hp = attacker.second->attack(target.second);
-  if (Utility::isCharacter(attacker.second->getType())) {
-    printAttack(attacker.second, target.second, oldHp - hp);
-  }
+  printAttack(attacker.second, target.second, oldHp - hp);
   bool died = hp <= 0;
   if (died) {
-    if (target.second != m_player)
-    {
-      parseEffect(target.second->died());
-      removeEntity(target.second);
-      target.second = nullptr;
+    if (target.second->getType() == Type::Dragon) {
+      // make dragon horde permeable
     }
   }
+  if (target.second != m_player) {
+    parseEffect(target.second->died());
+    removeEntity(target.second);
+    target.second = nullptr;
+  }
+  if (attacker.second == m_player && m_player->getType() == Type::Troll)
+    m_player->setGold(m_player->getGold() + 5);
+
   return died;
 }
 
 void Model::removeEntity(Entity *e) {
-  for (int i = 0; i < m_entities.size(); ++i) {
+  for (size_t i = 0; i < m_entities.size(); ++i) {
     auto &x = m_entities[i];
     if (x.get() == e) {
       m_entities.erase(m_entities.begin() + i);
@@ -278,47 +309,52 @@ void Model::printAttack(Entity *attacker, Entity *defender, int damage) {
   if (attacker == m_player)
     turn_desc += "PC";
   else
-    turn_desc += Utility::typeToString(attacker->getType());
+    turn_desc += typeToString(attacker->getType());
   turn_desc += " deals " + std::to_string(damage) + " damage to ";
   if (defender == m_player)
     turn_desc += "PC. ";
   else
-    turn_desc += Utility::typeToString(defender->getType()) + " (" +
+    turn_desc += typeToString(defender->getType()) + " (" +
                  std::to_string(defender->getHp()) + " HP). ";
 }
 
-void Model::printMove(Utility::Direction d)
-{
-  turn_desc += "PC moves " + Utility::dirToString(d);
+void Model::printMove(Direction d) {
+  turn_desc += "PC moves " + dirToString(d);
 
-  vector<Utility::Type> nearby{scout()};
+  vector<Type> nearby{scout()};
 
-  for (int i = 0; i < nearby.size(); ++i)
-  {
+  if (!nearby.empty())
+    turn_desc += " and sees";
+  else
+    turn_desc += ". ";
+
+  for (size_t i = 0; i < nearby.size(); ++i) {
     turn_desc += " ";
-    if (Utility::isPotion(nearby[i]) && !m_potions[nearby[i]]) turn_desc += "Potion";
-    else turn_desc += Utility::typeToString(nearby[i]);
-    if (i != nearby.size()-1) turn_desc += ",";
-    else turn_desc += ".";
+    if (isPotion(nearby[i]) && !m_potions[nearby[i]])
+      turn_desc += "Potion";
+    else
+      turn_desc += typeToString(nearby[i]);
+    if (i != nearby.size() - 1)
+      turn_desc += ",";
+    else
+      turn_desc += ". ";
   }
 }
 
-vector<Utility::Type> Model::scout()
-{
-  vector<Utility::Type> result{};
-  for (int dX = -1; dX < 2; ++dX)
-  {
-    for (int dY = -1; dY < 2; ++dY)
-    {
-      if (dX == 0 && dY == 0) continue;
+vector<Type> Model::scout() {
+  vector<Type> result{};
+  for (int dX = -1; dX < 2; ++dX) {
+    for (int dY = -1; dY < 2; ++dY) {
+      if (dX == 0 && dY == 0)
+        continue;
 
-      Utility::Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
+      Loc l{m_playerLoc.first + dX, m_playerLoc.second + dY};
       auto &target = m_state[indiceFromLoc(l)];
 
-      if (target.second)
-      {
-        Utility::Type t = target.second->getType();
-        if (Utility::isCharacter(t)) continue;
+      if (target.second) {
+        Type t = target.second->getType();
+        if (isCharacter(t))
+          continue;
         result.push_back(t);
       }
     }
@@ -326,13 +362,13 @@ vector<Utility::Type> Model::scout()
   return result;
 }
 
-void Model::resetEntities()
-{
+void Model::resetEntities() {
   if (m_floor != 0) {
-    m_entities.erase(m_entities.begin()+1, m_entities.end());
-    for (auto &i : m_state) i.second = nullptr;
+    m_entities.erase(m_entities.begin() + 1, m_entities.end());
+    for (auto &i : m_state)
+      i.second = nullptr;
     m_player->setChamberNum(rand() % 5);
-    Utility::Loc l = LocInChamber(m_player->getChamberNum());
+    Loc l = LocInChamber(m_player->getChamberNum());
     m_state[indiceFromLoc(l)].second = m_player;
     m_playerLoc = l;
     m_player->setAtkBonus(0);
@@ -340,51 +376,55 @@ void Model::resetEntities()
   }
 }
 
-int Model::getNonPlayerChamber()
-{
+int Model::getNonPlayerChamber() {
   int chamber = rand() % 5;
-  while(chamber != m_player->getChamberNum())
-  {
+  while (chamber == m_player->getChamberNum()) {
     chamber = rand() % 5;
   }
   return chamber;
 }
 
-bool Model::parseEffect(Utility::Effect e) {
+bool Model::parseEffect(Effect e) {
+  float multi = 1;
+  if (m_player->getType() == Type::Drow)
+    multi += 0.5;
+
   switch (e) {
-  case Utility::Effect::SmallTreasure:
+  case Effect::SmallTreasure:
     m_player->setGold(m_player->getGold() + 1);
     break;
-  case Utility::Effect::NormalTreasure:
+  case Effect::NormalTreasure:
     m_player->setGold(m_player->getGold() + 2);
     break;
-  case Utility::Effect::MerchantTreasure:
+  case Effect::MerchantTreasure:
     m_player->setGold(m_player->getGold() + 4);
     break;
-  case Utility::Effect::DragonTreasure:
+  case Effect::DragonTreasure:
     m_player->setGold(m_player->getGold() + 6);
     break;
-  case Utility::Effect::AtkUp:
-    m_player->setAtkBonus(m_player->getAtkBonus() + 5);
+  case Effect::AtkUp:
+    m_player->setAtkBonus(m_player->getAtkBonus() + 5 * multi);
     break;
-  case Utility::Effect::AtkDown:
-    m_player->setAtkBonus(m_player->getAtkBonus() - 5);
+  case Effect::AtkDown:
+    m_player->setAtkBonus(m_player->getAtkBonus() - 5 * multi);
     break;
-  case Utility::Effect::DefUp:
-    m_player->setDefBonus(m_player->getDefBonus() + 5);
+  case Effect::DefUp:
+    m_player->setDefBonus(m_player->getDefBonus() + 5 * multi);
     break;
-  case Utility::Effect::DefDown:
-      m_player->setDefBonus(m_player->getDefBonus() - 5);
+  case Effect::DefDown:
+    m_player->setDefBonus(m_player->getDefBonus() - 5 * multi);
     break;
-  case Utility::Effect::HpUp:
-      m_player->setHp(m_player->getHp() + 10);
+  case Effect::HpUp:
+    m_player->setHp(m_player->getHp() + 10 * multi);
     break;
-  case Utility::Effect::HpDown:
-      m_player->setHp(m_player->getHp() - 10);
+  case Effect::HpDown:
+    m_player->setHp(m_player->getHp() - 10 * multi);
     break;
-  case Utility::Effect::Staircase:
+  case Effect::Staircase:
     setNextFloor(true);
     break;
+  case Effect::TrollHealing:
+    m_player->setHp(m_player->getHp() + 5);
   default:
     return false;
   }
@@ -394,8 +434,8 @@ bool Model::parseEffect(Utility::Effect e) {
 void Model::generateLevel() {
   resetEntities();
   generateEntity<Staircase>(NEEDS_RANDOM, getNonPlayerChamber());
-  generateTreasure(10);
-  generatePotions(10);
-  generateEnemies(20);
+  generateTreasure(10 - present_treasure);
+  generatePotions(10 - present_potions);
+  generateEnemies(20 - present_enemies);
   resetTurnDesc();
 }

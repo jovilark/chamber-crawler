@@ -9,3 +9,5 @@ Troll::Troll() {
 }
 
 char Troll::draw() { return '@'; }
+
+Utility::Effect Troll::finished() { return Utility::Effect::TrollHealing; }

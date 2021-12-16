@@ -6,4 +6,6 @@ bool NormalTreasure::permeable() { return true; }
 
 char NormalTreasure::draw() { return 'G'; }
 
-Utility::Effect NormalTreasure::collected() { return Utility::Effect::NormalTreasure; }
+Utility::Effect NormalTreasure::collected() {
+  return Utility::Effect::NormalTreasure;
+}

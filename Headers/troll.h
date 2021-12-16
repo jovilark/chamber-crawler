@@ -8,7 +8,7 @@ public:
   Troll();
   ~Troll() = default;
   char draw();
-
+  Utility::Effect finished();
 private:
   static const int DEFAULT_HP = 120;
   static const int DEFAULT_ATK = 25;

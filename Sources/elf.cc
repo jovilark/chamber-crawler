@@ -11,7 +11,8 @@ Elf::Elf() {
 char Elf::draw() { return 'E'; }
 
 int Elf::attack(Entity *defender) {
-  int result = defender->defend(getCurrentAtk());
-  if (defender->getType() != Utility::Type::Drow) result += defender->defend(getCurrentAtk());
+  int result = Entity::attack(defender);
+  if (defender->getType() != Utility::Type::Drow)
+    result = Entity::attack(defender);
   return result;
 }

@@ -6,12 +6,8 @@ Merchant::Merchant() {
   setAtk(Merchant::DEFAULT_ATK);
   setDef(Merchant::DEFAULT_DEF);
   setType(Utility::Type::Merchant);
-  setHostile(false);
 }
 
 char Merchant::draw() { return 'M'; }
 
-int Merchant::defend(float atk) {
-  setHostile(true);
-  return Entity::defend(atk);
-}
+Utility::Effect Merchant::died() { return Utility::Effect::MerchantTreasure; }
