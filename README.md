@@ -1,2 +1,3 @@
-# CS246_final
+# CC3k
 
+C++ dungeon crawler game.
